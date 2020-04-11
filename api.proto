@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package api;
+
+option go_package = "api";
+import "github.com/mwitkow/go-proto-validators/validator.proto";
+
+service GeoDB {
+    rpc Ping(PingRequest) returns(PingResponse){};
+    rpc UpsertObjects(UpsertObjectsRequest) returns(UpsertObjectsResponse){};
+    rpc GetObjects(GetObjectsRequest) returns(GetObjectsResponse){};
+    rpc DeleteObjects(DeleteObjectsRequest) returns(DeleteObjectsResponse){};
+    rpc StreamObjects(StreamObjectsRequest) returns(stream StreamObjectsResponse){};
+}
+
+message StreamObjectsRequest {}
+
+message StreamObjectsResponse {
+    Object object =1;
+}
+
+message UpsertObjectsRequest {
+    map<string, Data> data =1;
+}
+
+message UpsertObjectsResponse {}
+
+message GetObjectsRequest {
+    repeated string keys =1;
+}
+
+message GetObjectsResponse {
+    map<string, Object> objects= 1;
+}
+
+message DeleteObjectsRequest {
+    repeated string keys =1;
+}
+
+message DeleteObjectsResponse {}
+
+message PingRequest {}
+
+message PingResponse {
+    bool ok =1;
+}
+
+message Point {
+    double lat =1;
+    double lon =2;
+}
+
+message Data {
+    Point point =2;
+    int64 radius =3;
+    map<string, string> metadata =4;
+    int64 updated_unix =5;
+}
+
+message Object {
+    string key =1;
+    Data data =2;
+}
