@@ -13,7 +13,9 @@ service GeoDB {
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
 }
 
-message StreamRequest {}
+message StreamRequest {
+    string regex =1;
+}
 
 message StreamResponse {
     Data data =1;

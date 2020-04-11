@@ -7,6 +7,7 @@ import (
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
 	log "github.com/sirupsen/logrus"
+	"regexp"
 )
 
 type GeoDB struct {
@@ -84,10 +85,24 @@ func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
 	for {
 		select {
 		case msg := <-p.hub.GetClientMessageStream(clientID):
-			if err := ss.Send(&api.StreamResponse{
-				Data: msg,
-			}); err != nil {
-				log.Error(err.Error())
+			if r.Regex != "" {
+				match, err := regexp.MatchString(r.Regex, msg.Key)
+				if err != nil {
+					return err
+				}
+				if match {
+					if err := ss.Send(&api.StreamResponse{
+						Data: msg,
+					}); err != nil {
+						log.Error(err.Error())
+					}
+				}
+			} else {
+				if err := ss.Send(&api.StreamResponse{
+					Data: msg,
+				}); err != nil {
+					log.Error(err.Error())
+				}
 			}
 		case <-ss.Context().Done():
 			p.hub.RemoveMessageStreamClient(clientID)
