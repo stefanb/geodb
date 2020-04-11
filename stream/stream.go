@@ -7,24 +7,26 @@ import (
 	"sync"
 )
 
-var objectChan = make(chan *api.Object)
+var objectChan = make(chan *api.Data)
 
 type Hub struct {
-	clients map[string]chan *api.Object
+	clients map[string]chan *api.Data
 	mu      *sync.Mutex
 }
 
 func NewHub() *Hub {
-	return &Hub{clients: map[string]chan *api.Object{}, mu: &sync.Mutex{}}
+	return &Hub{clients: map[string]chan *api.Data{}, mu: &sync.Mutex{}}
 }
 
 func (h *Hub) Start(ctx context.Context, channel string) error {
 	for {
 		select {
+
 		case obj := <-objectChan:
 			if h.clients == nil {
-				h.clients = map[string]chan *api.Object{}
+				h.clients = map[string]chan *api.Data{}
 			}
+
 			for _, channel := range h.clients {
 				if channel != nil {
 					channel <- obj
@@ -40,11 +42,11 @@ func (h *Hub) AddMessageStreamClient() string {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if h.clients == nil {
-		h.clients = map[string]chan *api.Object{}
+		h.clients = map[string]chan *api.Data{}
 	}
 	id, _ := uuid.NewV4()
 	idStr := id.String()
-	h.clients[idStr] = make(chan *api.Object)
+	h.clients[idStr] = make(chan *api.Data)
 	return idStr
 }
 
@@ -57,13 +59,13 @@ func (h *Hub) RemoveMessageStreamClient(id string) {
 	}
 }
 
-func (h *Hub) GetClientMessageStream(id string) chan *api.Object {
+func (h *Hub) GetClientMessageStream(id string) chan *api.Data {
 	if _, ok := h.clients[id]; ok {
 		return h.clients[id]
 	}
 	return nil
 }
 
-func (h *Hub) PublishObject(obj *api.Object) {
+func (h *Hub) PublishObject(obj *api.Data) {
 	objectChan <- obj
 }

@@ -7,37 +7,37 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 service GeoDB {
     rpc Ping(PingRequest) returns(PingResponse){};
-    rpc UpsertObjects(UpsertObjectsRequest) returns(UpsertObjectsResponse){};
-    rpc GetObjects(GetObjectsRequest) returns(GetObjectsResponse){};
-    rpc DeleteObjects(DeleteObjectsRequest) returns(DeleteObjectsResponse){};
-    rpc StreamObjects(StreamObjectsRequest) returns(stream StreamObjectsResponse){};
+    rpc Upsert(UpsertRequest) returns(UpsertResponse){};
+    rpc Get(GetRequest) returns(GetResponse){};
+    rpc Delete(DeleteRequest) returns(DeleteResponse){};
+    rpc Stream(StreamRequest) returns(stream StreamResponse){};
 }
 
-message StreamObjectsRequest {}
+message StreamRequest {}
 
-message StreamObjectsResponse {
-    Object object =1;
+message StreamResponse {
+    Data data =1;
 }
 
-message UpsertObjectsRequest {
+message UpsertRequest {
     map<string, Data> data =1;
 }
 
-message UpsertObjectsResponse {}
+message UpsertResponse {}
 
-message GetObjectsRequest {
+message GetRequest {
     repeated string keys =1;
 }
 
-message GetObjectsResponse {
-    map<string, Object> objects= 1;
+message GetResponse {
+    map<string, Data> data= 1;
 }
 
-message DeleteObjectsRequest {
+message DeleteRequest {
     repeated string keys =1;
 }
 
-message DeleteObjectsResponse {}
+message DeleteResponse {}
 
 message PingRequest {}
 
@@ -51,13 +51,9 @@ message Point {
 }
 
 message Data {
+    string key =1;
     Point point =2;
     int64 radius =3;
     map<string, string> metadata =4;
     int64 updated_unix =5;
-}
-
-message Object {
-    string key =1;
-    Data data =2;
 }

@@ -27,25 +27,27 @@ func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingRespon
 	}, nil
 }
 
-func (p *GeoDB) UpsertObjects(ctx context.Context, r *api.UpsertObjectsRequest) (*api.UpsertObjectsResponse, error) {
+func (p *GeoDB) Upsert(ctx context.Context, r *api.UpsertRequest) (*api.UpsertResponse, error) {
 	txn := p.db.NewTransaction(true)
 	defer txn.Discard()
 	for k, val := range r.Data {
+		val.Key = k
 		bits, _ := proto.Marshal(val)
 		if err := txn.Set([]byte(k), bits); err != nil {
 			return nil, err
 		}
+		p.hub.PublishObject(val)
 	}
 	if err := txn.Commit(); err != nil {
 		return nil, err
 	}
-	return &api.UpsertObjectsResponse{}, nil
+	return &api.UpsertResponse{}, nil
 }
 
-func (p *GeoDB) GetObjects(ctx context.Context, r *api.GetObjectsRequest) (*api.GetObjectsResponse, error) {
+func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
-	objects := map[string]*api.Object{}
+	objects := map[string]*api.Data{}
 	for _, key := range r.Keys {
 		i, err := txn.Get([]byte(key))
 		if err != nil {
@@ -55,18 +57,18 @@ func (p *GeoDB) GetObjects(ctx context.Context, r *api.GetObjectsRequest) (*api.
 		if err != nil {
 			return nil, err
 		}
-		var obj = &api.Object{}
+		var obj = &api.Data{}
 		if err := proto.Unmarshal(res, obj); err != nil {
 			return nil, err
 		}
-		objects[obj.Key] = obj
+		objects[key] = obj
 	}
-	return &api.GetObjectsResponse{
-		Objects: objects,
+	return &api.GetResponse{
+		Data: objects,
 	}, nil
 }
 
-func (p *GeoDB) DeleteObjects(ctx context.Context, r *api.DeleteObjectsRequest) (*api.DeleteObjectsResponse, error) {
+func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	for _, key := range r.Keys {
@@ -74,16 +76,16 @@ func (p *GeoDB) DeleteObjects(ctx context.Context, r *api.DeleteObjectsRequest) 
 			return nil, err
 		}
 	}
-	return &api.DeleteObjectsResponse{}, nil
+	return &api.DeleteResponse{}, nil
 }
 
-func (p *GeoDB) StreamObjects(r *api.StreamObjectsRequest, ss api.GeoDB_StreamObjectsServer) error {
+func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
 	clientID := p.hub.AddMessageStreamClient()
 	for {
 		select {
 		case msg := <-p.hub.GetClientMessageStream(clientID):
-			if err := ss.Send(&api.StreamObjectsResponse{
-				Object: msg,
+			if err := ss.Send(&api.StreamResponse{
+				Data: msg,
 			}); err != nil {
 				log.Error(err.Error())
 			}
