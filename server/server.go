@@ -31,7 +31,7 @@ type Server struct {
 	server     *grpc.Server
 	router     *echo.Echo
 	streamHub  *stream.Hub
-	db *badger.DB
+	db         *badger.DB
 	hTTPClient *http.Client
 	logger     *log.Logger
 }
@@ -89,7 +89,7 @@ func NewServer() (*Server, error) {
 		db:         db,
 		hTTPClient: http.DefaultClient,
 		logger:     log.New(),
-		streamHub: stream.NewHub(),
+		streamHub:  stream.NewHub(),
 	}
 	s.router.Use(
 		middleware.Recover(),

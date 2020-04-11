@@ -6,12 +6,13 @@ require (
 	cloud.google.com/go v0.53.0 // indirect
 	github.com/dgraph-io/badger/v2 v2.0.3
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/gogo/protobuf v1.3.1 // indirect
+	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.3.5
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/mwitkow/go-proto-validators v0.3.0
 	github.com/piotrkowalczuk/promgrpc/v3 v3.2.4
 	github.com/pkg/errors v0.9.1 // indirect

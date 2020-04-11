@@ -10,8 +10,8 @@ import (
 var objectChan = make(chan *api.Object)
 
 type Hub struct {
-	clients  map[string]chan *api.Object
-	mu       *sync.Mutex
+	clients map[string]chan *api.Object
+	mu      *sync.Mutex
 }
 
 func NewHub() *Hub {

@@ -3,8 +3,8 @@ package auth
 import (
 	"context"
 	"github.com/autom8ter/geodb/config"
-	"google.golang.org/grpc/codes"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
+	"google.golang.org/grpc/codes"
 
 	"google.golang.org/grpc/status"
 )
