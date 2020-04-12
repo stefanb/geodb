@@ -14,4 +14,4 @@ FROM scratch
 COPY --from=build-env /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=build-env /go/bin/geodb /go/bin/geodb
 WORKDIR /geodb
-ENTRYPOINT ["/go/bin/geodb"]
+ENTRYPOINT ["/go/bin/geodb", "serve"]
