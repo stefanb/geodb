@@ -16,6 +16,17 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *StreamEventsRequest) Validate() error {
+	return nil
+}
+func (this *StreamEventsResponse) Validate() error {
+	if this.Event != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Event); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Event", err)
+		}
+	}
+	return nil
+}
 func (this *KeysRequest) Validate() error {
 	return nil
 }
@@ -86,11 +97,15 @@ func (this *Object) Validate() error {
 	return nil
 }
 func (this *Event) Validate() error {
-	if this.Point != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
+	if this.TriggerObject != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.TriggerObject); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("TriggerObject", err)
 		}
 	}
-	// Validation of proto3 map<> fields is unsupported.
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
 	return nil
 }

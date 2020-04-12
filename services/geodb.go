@@ -6,6 +6,7 @@ import (
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
+	"github.com/paulmach/go.geo"
 	log "github.com/sirupsen/logrus"
 	"regexp"
 	"sync"
@@ -54,15 +55,49 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 				val.UpdatedUnix = time.Now().Unix()
 			}
 			bits, _ := proto.Marshal(val)
-			if err := txn.SetEntry(&badger.Entry{
+			e := &badger.Entry{
 				Key:       []byte(key),
 				Value:     bits,
 				UserMeta:  ObjectMeta.Byte(),
 				ExpiresAt: uint64(val.ExpiresUnix),
-			}); err != nil {
-				log.Error(err.Error())
+			}
+			if err := txn.SetEntry(e); err != nil {
+				return
 			}
 			p.hub.PublishObject(val)
+
+			point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
+			iter := txn.NewIterator(badger.DefaultIteratorOptions)
+			for iter.Rewind(); iter.Valid(); iter.Next() {
+				item := iter.Item()
+				if item.UserMeta() != ObjectMeta.Byte() {
+					continue
+				}
+				res, err := item.ValueCopy(nil)
+				if err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				var obj = &api.Object{}
+				if err := proto.Unmarshal(res, obj); err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				if obj.Point == nil {
+					continue
+				}
+				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
+				dist := point1.GeoDistanceFrom(point2, true)
+				if dist <= float64(val.Radius+obj.Radius) {
+					p.hub.PublishEvent(&api.Event{
+						TriggerObject: val,
+						Object:        obj,
+						Distance:      dist,
+						TimestampUnix: val.UpdatedUnix,
+					})
+				}
+			}
+			iter.Close()
 			if err := txn.Commit(); err != nil {
 				log.Error(err.Error())
 			}
@@ -188,10 +223,10 @@ func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteRe
 }
 
 func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
-	clientID := p.hub.AddMessageStreamClient(r.ClientId)
+	clientID := p.hub.AddObjectStreamClient(r.ClientId)
 	for {
 		select {
-		case msg := <-p.hub.GetClientMessageStream(clientID):
+		case msg := <-p.hub.GetClientObjectStream(clientID):
 			if r.Regex != "" {
 				match, err := regexp.MatchString(r.Regex, msg.Key)
 				if err != nil {
@@ -212,7 +247,38 @@ func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
 				}
 			}
 		case <-ss.Context().Done():
-			p.hub.RemoveMessageStreamClient(clientID)
+			p.hub.RemoveObjectStreamClient(clientID)
+			break
+		}
+	}
+}
+
+func (p *GeoDB) StreamEvents(r *api.StreamEventsRequest, ss api.GeoDB_StreamEventsServer) error {
+	clientID := p.hub.AddObjectStreamClient(r.ClientId)
+	for {
+		select {
+		case event := <-p.hub.GetClientEventStream(clientID):
+			if r.Regex != "" {
+				match, err := regexp.MatchString(r.Regex, event.TriggerObject.Key)
+				if err != nil {
+					return err
+				}
+				if match {
+					if err := ss.Send(&api.StreamEventsResponse{
+						Event: event,
+					}); err != nil {
+						log.Error(err.Error())
+					}
+				}
+			} else {
+				if err := ss.Send(&api.StreamEventsResponse{
+					Event: event,
+				}); err != nil {
+					log.Error(err.Error())
+				}
+			}
+		case <-ss.Context().Done():
+			p.hub.RemoveObjectStreamClient(clientID)
 			break
 		}
 	}

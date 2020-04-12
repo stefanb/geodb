@@ -14,11 +14,14 @@ require (
 	github.com/labstack/gommon v0.3.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/mwitkow/go-proto-validators v0.3.0
+	github.com/paulmach/go.geo v0.0.0-20180829195134-22b514266d33
+	github.com/paulmach/go.geojson v1.4.0 // indirect
 	github.com/piotrkowalczuk/promgrpc/v3 v3.2.4
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.5.1
 	github.com/sirupsen/logrus v1.5.0
 	github.com/soheilhy/cmux v0.1.4
+	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.3
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073 // indirect

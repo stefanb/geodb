@@ -14,6 +14,16 @@ service GeoDB {
     rpc Keys(KeysRequest) returns(KeysResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
+    rpc StreamEvents(StreamEventsRequest) returns(stream StreamEventsResponse){};
+}
+
+message StreamEventsRequest {
+    string client_id =1;
+    string regex =2;
+}
+
+message StreamEventsResponse {
+    Event event =1;
 }
 
 message KeysRequest {}
@@ -87,12 +97,9 @@ message Object {
     int64 updated_unix =6;
 }
 
-
 message Event {
-    string key =1;
-    Point point =2;
-    int64 radius =3;
-    map<string, string> metadata =4;
-    int64 expires_unix =5;
-    int64 updated_unix =6;
+    Object trigger_object =1;
+    Object object =2;
+    double distance =3;
+    int64 timestamp_unix =4;
 }
