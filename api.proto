@@ -7,32 +7,49 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 service GeoDB {
     rpc Ping(PingRequest) returns(PingResponse){};
-    rpc Upsert(UpsertRequest) returns(UpsertResponse){};
+    rpc Set(SetRequest) returns(SetResponse){};
     rpc Get(GetRequest) returns(GetResponse){};
+    rpc Seek(SeekRequest) returns(SeekResponse){};
+    rpc Keys(KeysRequest) returns(KeysResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
 }
 
+message KeysRequest {}
+
+message KeysResponse {
+    repeated string keys =1;
+}
+
 message StreamRequest {
-    string regex =1;
+    string client_id =1;
+    string regex =2;
 }
 
 message StreamResponse {
-    Data data =1;
+    Object object =1;
 }
 
-message UpsertRequest {
-    map<string, Data> data =1;
+message SetRequest {
+    map<string, Object> object =1;
 }
 
-message UpsertResponse {}
+message SetResponse {}
 
 message GetRequest {
     repeated string keys =1;
 }
 
 message GetResponse {
-    map<string, Data> data= 1;
+    map<string, Object> object= 1;
+}
+
+message SeekRequest {
+    string prefix =1;
+}
+
+message SeekResponse {
+    map<string, Object> object= 1;
 }
 
 message DeleteRequest {
@@ -52,10 +69,11 @@ message Point {
     double lon =2;
 }
 
-message Data {
+message Object {
     string key =1;
     Point point =2;
     int64 radius =3;
     map<string, string> metadata =4;
-    int64 updated_unix =5;
+    int64 expires_unix =5;
+    int64 updated_unix =6;
 }

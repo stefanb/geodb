@@ -115,7 +115,15 @@ func (s *Server) Run() {
 	fmt.Printf("starting grpc and http server on port %s\n", config.Config.GetString("GEODB_PORT"))
 	egp, ctx := errgroup.WithContext(context.Background())
 	egp.Go(func() error {
-		return s.streamHub.Start(ctx, config.Config.GetString("GEODB_DB_CHANNEL"))
+		return s.streamHub.Start(ctx)
+	})
+	egp.Go(func() error {
+		for {
+			if err := s.db.RunValueLogGC(0.7); err != nil {
+				log.Error(err.Error())
+			}
+			time.Sleep(config.Config.GetDuration("GEODB_GC_INTERVAL"))
+		}
 	})
 	egp.Go(func() error {
 		return s.router.Server.Serve(hMux)

@@ -16,28 +16,41 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *KeysRequest) Validate() error {
+	return nil
+}
+func (this *KeysResponse) Validate() error {
+	return nil
+}
 func (this *StreamRequest) Validate() error {
 	return nil
 }
 func (this *StreamResponse) Validate() error {
-	if this.Data != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Data); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Data", err)
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
 		}
 	}
 	return nil
 }
-func (this *UpsertRequest) Validate() error {
+func (this *SetRequest) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *UpsertResponse) Validate() error {
+func (this *SetResponse) Validate() error {
 	return nil
 }
 func (this *GetRequest) Validate() error {
 	return nil
 }
 func (this *GetResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *SeekRequest) Validate() error {
+	return nil
+}
+func (this *SeekResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
@@ -56,7 +69,7 @@ func (this *PingResponse) Validate() error {
 func (this *Point) Validate() error {
 	return nil
 }
-func (this *Data) Validate() error {
+func (this *Object) Validate() error {
 	if this.Point != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
