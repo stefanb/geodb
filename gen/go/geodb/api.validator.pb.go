@@ -47,6 +47,13 @@ func (this *GetResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
+func (this *GetRegexRequest) Validate() error {
+	return nil
+}
+func (this *GetRegexResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
 func (this *SeekRequest) Validate() error {
 	return nil
 }
@@ -70,6 +77,15 @@ func (this *Point) Validate() error {
 	return nil
 }
 func (this *Object) Validate() error {
+	if this.Point != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
+		}
+	}
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *Event) Validate() error {
 	if this.Point != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)

@@ -9,6 +9,7 @@ service GeoDB {
     rpc Ping(PingRequest) returns(PingResponse){};
     rpc Set(SetRequest) returns(SetResponse){};
     rpc Get(GetRequest) returns(GetResponse){};
+    rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
     rpc Seek(SeekRequest) returns(SeekResponse){};
     rpc Keys(KeysRequest) returns(KeysResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
@@ -44,6 +45,14 @@ message GetResponse {
     map<string, Object> object= 1;
 }
 
+message GetRegexRequest {
+    string regex =1;
+}
+
+message GetRegexResponse {
+    map<string, Object> object= 1;
+}
+
 message SeekRequest {
     string prefix =1;
 }
@@ -70,6 +79,16 @@ message Point {
 }
 
 message Object {
+    string key =1;
+    Point point =2;
+    int64 radius =3;
+    map<string, string> metadata =4;
+    int64 expires_unix =5;
+    int64 updated_unix =6;
+}
+
+
+message Event {
     string key =1;
     Point point =2;
     int64 radius =3;

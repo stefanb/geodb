@@ -8,6 +8,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	log "github.com/sirupsen/logrus"
 	"regexp"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,17 @@ func NewGeoDB(db *badger.DB, hub *stream.Hub) *GeoDB {
 	}
 }
 
+type Meta byte
+
+func (m Meta) Byte() byte {
+	return byte(m)
+}
+
+const (
+	ObjectMeta Meta = 1
+	EventMeta  Meta = 2
+)
+
 func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingResponse, error) {
 	return &api.PingResponse{
 		Ok: true,
@@ -30,27 +42,85 @@ func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingRespon
 }
 
 func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, error) {
-	txn := p.db.NewTransaction(true)
+	wg := sync.WaitGroup{}
+	for k, v := range r.Object {
+		wg.Add(1)
+		go func(key string, val *api.Object) {
+			defer wg.Done()
+			txn := p.db.NewTransaction(true)
+			defer txn.Discard()
+			val.Key = key
+			if val.UpdatedUnix == 0 {
+				val.UpdatedUnix = time.Now().Unix()
+			}
+			bits, _ := proto.Marshal(val)
+			if err := txn.SetEntry(&badger.Entry{
+				Key:       []byte(key),
+				Value:     bits,
+				UserMeta:  ObjectMeta.Byte(),
+				ExpiresAt: uint64(val.ExpiresUnix),
+			}); err != nil {
+				log.Error(err.Error())
+			}
+			p.hub.PublishObject(val)
+			if err := txn.Commit(); err != nil {
+				log.Error(err.Error())
+			}
+		}(k, v)
+	}
+	wg.Wait()
+	return &api.SetResponse{}, nil
+}
+
+func (p *GeoDB) Keys(ctx context.Context, r *api.KeysRequest) (*api.KeysResponse, error) {
+	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
-	for k, val := range r.Object {
-		val.Key = k
-		if val.UpdatedUnix == 0 {
-			val.UpdatedUnix = time.Now().Unix()
+	keys := []string{}
+	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer iter.Close()
+	for iter.Rewind(); iter.Valid(); iter.Next() {
+		item := iter.Item()
+		if item.UserMeta() != ObjectMeta.Byte() {
+			continue
 		}
-		bits, _ := proto.Marshal(val)
-		if err := txn.SetEntry(&badger.Entry{
-			Key:       []byte(k),
-			Value:     bits,
-			ExpiresAt: uint64(val.ExpiresUnix),
-		}); err != nil {
+		keys = append(keys, string(item.Key()))
+	}
+	return &api.KeysResponse{
+		Keys: keys,
+	}, nil
+}
+
+func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetRegexResponse, error) {
+	txn := p.db.NewTransaction(false)
+	defer txn.Discard()
+	objects := map[string]*api.Object{}
+	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer iter.Close()
+	for iter.Rewind(); iter.Valid(); iter.Next() {
+		item := iter.Item()
+		if item.UserMeta() != ObjectMeta.Byte() {
+			continue
+		}
+		match, err := regexp.MatchString(r.Regex, string(item.Key()))
+		if err != nil {
 			return nil, err
 		}
-		p.hub.PublishObject(val)
+		if match {
+			res, err := item.ValueCopy(nil)
+			if err != nil {
+				return nil, err
+			}
+			var obj = &api.Object{}
+			if err := proto.Unmarshal(res, obj); err != nil {
+				return nil, err
+			}
+			objects[string(item.Key())] = obj
+		}
+
 	}
-	if err := txn.Commit(); err != nil {
-		return nil, err
-	}
-	return &api.SetResponse{}, nil
+	return &api.GetRegexResponse{
+		Object: objects,
+	}, nil
 }
 
 func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, error) {
@@ -61,6 +131,9 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 		i, err := txn.Get([]byte(key))
 		if err != nil {
 			return nil, err
+		}
+		if i.UserMeta() != ObjectMeta.Byte() {
+			continue
 		}
 		res, err := i.ValueCopy(nil)
 		if err != nil {
@@ -85,6 +158,9 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 	defer iter.Close()
 	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
 		item := iter.Item()
+		if item.UserMeta() != ObjectMeta.Byte() {
+			continue
+		}
 		res, err := item.ValueCopy(nil)
 		if err != nil {
 			return nil, err
@@ -97,21 +173,6 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 	}
 	return &api.SeekResponse{
 		Object: objects,
-	}, nil
-}
-
-func (p *GeoDB) Keys(ctx context.Context, r *api.KeysRequest) (*api.KeysResponse, error) {
-	txn := p.db.NewTransaction(false)
-	defer txn.Discard()
-	keys := []string{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer iter.Close()
-	for iter.Rewind(); iter.Valid(); iter.Next() {
-		item := iter.Item()
-		keys = append(keys, string(item.Key()))
-	}
-	return &api.KeysResponse{
-		Keys: keys,
 	}, nil
 }
 
