@@ -6,12 +6,13 @@ import (
 	api "github.com/autom8ter/geodb/gen/go/geodb"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 func init() {
-	setCmd.Flags().StringVarP(&target, "target", "t", "localhost:8080", "target server url")
-	setCmd.Flags().StringVarP(&key, "key", "k", "", "object key")
+	setCmd.Flags().StringVar(&target, "target", "localhost:8080", "target server url")
+	setCmd.Flags().StringVar(&key, "key", "", "object key")
+	setCmd.Flags().StringSliceVar(&keys, "keys", []string{"*"}, "object keys")
 	setCmd.Flags().Float64Var(&lat, "lat", 0, "latitude")
 	setCmd.Flags().Float64Var(&lon, "lon", 0, "longitude")
 	setCmd.Flags().Int64Var(&radius, "rad", 50, "radius")
@@ -23,6 +24,7 @@ var (
 	lat float64
 	lon float64
 	radius int64
+	keys []string
 )
 
 var setCmd = &cobra.Command{
@@ -52,5 +54,71 @@ var setCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		fmt.Println(resp.String())
+	},
+}
+
+var getCmd = &cobra.Command{
+	Use:                        "get",
+	Short: "get an object",
+	Run: func(cmd *cobra.Command, args []string) {
+		conn, err := grpc.Dial(target, grpc.WithInsecure())
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		client := api.NewGeoDBClient(conn)
+		resp, err := client.Get(context.Background(), &api.GetRequest{
+			Keys:                 keys,
+		})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		fmt.Println(resp.String())
+	},
+}
+
+var streamCmd = &cobra.Command{
+	Use:                        "stream",
+	Short: "stream object updates",
+	Run: func(cmd *cobra.Command, args []string) {
+		conn, err := grpc.Dial(target, grpc.WithInsecure())
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		client := api.NewGeoDBClient(conn)
+		resp, err := client.Stream(context.Background(), &api.StreamRequest{})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		for {
+			res, err := resp.Recv()
+			if err != nil {
+				log.Error(err.Error())
+			}
+			fmt.Println(res.String())
+		}
+	},
+}
+
+
+var streamEventsCmd = &cobra.Command{
+	Use:                        "stream-events",
+	Short: "stream object events",
+	Run: func(cmd *cobra.Command, args []string) {
+		conn, err := grpc.Dial(target, grpc.WithInsecure())
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		client := api.NewGeoDBClient(conn)
+		resp, err := client.StreamEvents(context.Background(), &api.StreamEventsRequest{})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		for {
+			res, err := resp.Recv()
+			if err != nil {
+				log.Error(err.Error())
+			}
+			fmt.Println(res.String())
+		}
 	},
 }

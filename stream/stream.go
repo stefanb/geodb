@@ -12,22 +12,23 @@ var eventChan = make(chan *api.Event)
 
 type Hub struct {
 	objectClients map[string]chan *api.Object
+	objMu            *sync.Mutex
 	eventClients  map[string]chan *api.Event
-	mu            *sync.Mutex
+	eventMu *sync.Mutex
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		objectClients: map[string]chan *api.Object{},
 		eventClients:  map[string]chan *api.Event{},
-		mu:            &sync.Mutex{},
+		objMu:            &sync.Mutex{},
+		eventMu:            &sync.Mutex{},
 	}
 }
 
 func (h *Hub) StartObjectStream(ctx context.Context) error {
 	for {
 		select {
-
 		case obj := <-objectChan:
 			if h.objectClients == nil {
 				h.objectClients = map[string]chan *api.Object{}
@@ -47,8 +48,10 @@ func (h *Hub) StartObjectStream(ctx context.Context) error {
 func (h *Hub) StartEventStream(ctx context.Context) error {
 	for {
 		select {
-
 		case event := <-eventChan:
+			if event == nil {
+				continue
+			}
 			if h.eventClients == nil {
 				h.eventClients = map[string]chan *api.Event{}
 			}
@@ -65,8 +68,8 @@ func (h *Hub) StartEventStream(ctx context.Context) error {
 }
 
 func (h *Hub) AddObjectStreamClient(clientID string) string {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	h.objMu.Lock()
+	defer h.objMu.Unlock()
 	if h.objectClients == nil {
 		h.objectClients = map[string]chan *api.Object{}
 	}
@@ -79,8 +82,8 @@ func (h *Hub) AddObjectStreamClient(clientID string) string {
 }
 
 func (h *Hub) RemoveObjectStreamClient(id string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	h.objMu.Lock()
+	defer h.objMu.Unlock()
 	if _, ok := h.objectClients[id]; ok {
 		close(h.objectClients[id])
 		delete(h.objectClients, id)
@@ -88,19 +91,25 @@ func (h *Hub) RemoveObjectStreamClient(id string) {
 }
 
 func (h *Hub) GetClientObjectStream(id string) chan *api.Object {
+	h.objMu.Lock()
+	defer h.objMu.Unlock()
 	if _, ok := h.objectClients[id]; ok {
 		return h.objectClients[id]
 	}
 	return nil
 }
 
-func (h *Hub) PublishObject(obj *api.Object) {
+func PublishObject(obj *api.Object) {
 	objectChan <- obj
 }
 
+func (h *Hub) PublishObject(obj *api.Object) {
+	PublishObject(obj)
+}
+
 func (h *Hub) AddEventStreamClient(clientID string) string {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	h.eventMu.Lock()
+	defer h.eventMu.Unlock()
 	if h.eventClients == nil {
 		h.eventClients = map[string]chan *api.Event{}
 	}
@@ -113,8 +122,8 @@ func (h *Hub) AddEventStreamClient(clientID string) string {
 }
 
 func (h *Hub) RemoveEventStreamClient(id string) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+	h.eventMu.Lock()
+	defer h.eventMu.Unlock()
 	if _, ok := h.eventClients[id]; ok {
 		close(h.eventClients[id])
 		delete(h.eventClients, id)
@@ -122,12 +131,18 @@ func (h *Hub) RemoveEventStreamClient(id string) {
 }
 
 func (h *Hub) GetClientEventStream(id string) chan *api.Event {
-	if _, ok := h.objectClients[id]; ok {
+	h.eventMu.Lock()
+	defer h.eventMu.Unlock()
+	if _, ok := h.eventClients[id]; ok {
 		return h.eventClients[id]
 	}
 	return nil
 }
 
 func (h *Hub) PublishEvent(event *api.Event) {
+	PublishEvent(event)
+}
+
+func PublishEvent(event *api.Event) {
 	eventChan <- event
 }
