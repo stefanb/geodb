@@ -96,6 +96,23 @@ func (this *StreamRegexResponse) Validate() error {
 	}
 	return nil
 }
+
+var _regex_StreamPrefixRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
+
+func (this *StreamPrefixRequest) Validate() error {
+	if !_regex_StreamPrefixRequest_Prefix.MatchString(this.Prefix) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Prefix", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Prefix))
+	}
+	return nil
+}
+func (this *StreamPrefixResponse) Validate() error {
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
+	return nil
+}
 func (this *SetRequest) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil

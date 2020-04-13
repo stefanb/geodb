@@ -17,25 +17,28 @@ service GeoDB {
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
     //GetPrefix - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
     rpc GetPrefix(GetPrefixRequest) returns(GetPrefixResponse){};
-    //GetPrefixKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
-    rpc GetPrefixKeys(GetPrefixKeysRequest) returns(GetPrefixKeysResponse){};
     //GetKeys -  input: none, output: returns all keys in database
     rpc GetKeys(GetKeysRequest) returns(GetKeysResponse){};
     //GetRegexKeys -  input: a regex string, output: returns all keys in database that match the regex pattern
     rpc GetRegexKeys(GetRegexKeysRequest) returns(GetRegexKeysResponse){};
+    //GetPrefixKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
+    rpc GetPrefixKeys(GetPrefixKeysRequest) returns(GetPrefixKeysResponse){};
     //Delete -  input: an array of object key strings to delete, output: none
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
     //Stream -  input: a clientID(optional) and an array of object keys(optional),
     //output: a stream of object details for realtime, targetted object geolocation updates
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
-    //StreamRegex -  input: a clientID(optional) a regex string(optional),
+    //StreamRegex -  input: a clientID(optional) a regex string,
     //output: a stream of object details for realtime, targetted object geolocation updates that match the regex pattern
     rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
+    //StreamPrefix -  input: a clientID(optional) a prefix string,
+    //output: a stream of object details for realtime, targetted object geolocation updates that match the prefix pattern
+    rpc StreamPrefix(StreamPrefixRequest) returns(stream StreamPrefixResponse){};
 }
 
 message Point {
-    double lat =1;
-    double lon =2;
+    double lat =1; //latitude
+    double lon =2; //longitude
 }
 
 //An Object represents anything that has a unique identifier, and a geolocation.
@@ -110,6 +113,15 @@ message StreamRegexResponse {
     ObjectDetail object =1;
 }
 
+message StreamPrefixRequest {
+    string client_id =1;
+    string prefix =2 [(validator.field) = {regex: "^.{1,225}$"}];
+}
+
+message StreamPrefixResponse {
+    ObjectDetail object =1;
+}
+
 message SetRequest {
     map<string, Object> object =1;
 }
@@ -131,7 +143,6 @@ message GetPrefixKeysRequest {
 message GetPrefixKeysResponse {
     repeated string keys =1;
 }
-
 
 message GetRegexKeysRequest {
     string regex =1 [(validator.field) = {regex: "^.{1,225}$"}];
