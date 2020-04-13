@@ -1,6 +1,7 @@
 # GeoDB- A Persistent Geospatial Database
 
     go get github.com/autom8ter/geodb
+    docker pull colemanword/geodb:latest
     
 GeoDB is a persistant geospatial database built using [Badger](https://github.com/dgraph-io/badger) and gRPC
 
@@ -19,7 +20,7 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - [x] Docker Image
 - [ ] REST Translation Layer
 - [ ] 80% Test Coverage
-- [ ] Docker Compose File
+- [x] Docker Compose File
 - [ ] Kubernetes Manifests
 
 ## Methodology
@@ -42,6 +43,31 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - GEODB_GC_INTERVAL (optional) default: 5m
 - GEODB_PASSWORD (optional) 
 - GEODB_GMAPS_KEY (optional)
+
+## Sample Docker Compose
+
+```yaml
+version: '3.7'
+services:
+  db:
+    image: colemanword/geodb:latest
+    env_file:
+      - geodb.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - default:/tmp/geodb
+    networks:
+      default:
+        aliases:
+          - geodb
+networks:
+  default:
+
+volumes:
+  default:
+
+```
 
 ## API REF
 

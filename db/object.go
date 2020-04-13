@@ -25,8 +25,9 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 		if val.UpdatedUnix == 0 {
 			val.UpdatedUnix = time.Now().Unix()
 		}
+
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
-		var events = map[string]*api.TrackerEvents{}
+		var events = map[string]*api.TrackerEvent{}
 		if val.GetTracking() != nil && len(val.GetTracking().GetTrackers()) > 0 {
 			for _, tracker := range val.GetTracking().GetTrackers() {
 				item, err := txn.Get([]byte(tracker.GetTargetObjectKey()))
@@ -49,7 +50,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 				}
 				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
 				dist := point1.GeoDistanceFrom(point2, true)
-				tracker := &api.TrackerEvents{
+				trackerEvent := &api.TrackerEvent{
 					Object:        obj,
 					Distance:      dist,
 					Inside:        dist <= float64(val.Radius+obj.Radius),
@@ -60,21 +61,25 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 					if err != nil {
 						log.Error(err.Error())
 					} else {
-						tracker.Direction = &api.Directions{
-							HtmlDirections: directions,
-							Eta:            int64(eta),
-							TravelDist:     int64(dist),
+						trackerEvent.Direction = &api.Directions{}
+						if tracker.TrackDirections {
+							trackerEvent.Direction.HtmlDirections = directions
 						}
-
+						if tracker.TrackEta {
+							trackerEvent.Direction.Eta = int64(eta)
+						}
+						if tracker.TrackDistance {
+							trackerEvent.Direction.Eta = int64(dist)
+						}
 					}
 				}
-				events[obj.Key] = tracker
+				events[obj.Key] = trackerEvent
 			}
 		}
 		detail := &api.ObjectDetail{
 			Object: val,
 		}
-		if maps != nil {
+		if maps != nil && val.GetAddress {
 			addr, err := maps.GetAddress(val.Point)
 			if err != nil {
 				log.Error(err.Error())

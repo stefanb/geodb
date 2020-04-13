@@ -66,7 +66,7 @@ func (this *Directions) Validate() error {
 func (this *Address) Validate() error {
 	return nil
 }
-func (this *TrackerEvents) Validate() error {
+func (this *TrackerEvent) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
