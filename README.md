@@ -7,7 +7,7 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 ## Features
 
 - [x] Real-Time server-client object geolocation streaming
-- [x] Persistenct object geolocation
+- [x] Persistent object geolocation
 - [x] Expire object geolocation streaming
 - [x] Track objects in relation to others using object "trackers"
 - [x] Enhance object tracking features using Google Maps Integration(see environmental variables)
