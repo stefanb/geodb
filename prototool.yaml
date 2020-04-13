@@ -12,8 +12,6 @@ protoc:
   allow_unused_imports: true
   includes:
     - /usr/local/include
-    - third_party/googleapis
-    - third_party/options
     - vendor
 
 lint:

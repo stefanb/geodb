@@ -9,6 +9,7 @@ import (
 	_ "github.com/mwitkow/go-proto-validators"
 	github_com_mwitkow_go_proto_validators "github.com/mwitkow/go-proto-validators"
 	math "math"
+	regexp "regexp"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -16,6 +17,57 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+func (this *Point) Validate() error {
+	return nil
+}
+func (this *Object) Validate() error {
+	if this.Point != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
+		}
+	}
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *Directions) Validate() error {
+	return nil
+}
+func (this *Address) Validate() error {
+	return nil
+}
+func (this *Tracker) Validate() error {
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
+	if this.Direction != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Direction); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Direction", err)
+		}
+	}
+	return nil
+}
+func (this *ObjectDetail) Validate() error {
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
+	if this.Address != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Address); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Address", err)
+		}
+	}
+	for _, item := range this.Trackers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Trackers", err)
+			}
+		}
+	}
+	return nil
+}
 func (this *StreamRequest) Validate() error {
 	return nil
 }
@@ -27,7 +79,13 @@ func (this *StreamResponse) Validate() error {
 	}
 	return nil
 }
+
+var _regex_StreamRegexRequest_Regex = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *StreamRegexRequest) Validate() error {
+	if !_regex_StreamRegexRequest_Regex.MatchString(this.Regex) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Regex", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Regex))
+	}
 	return nil
 }
 func (this *StreamRegexResponse) Validate() error {
@@ -52,13 +110,25 @@ func (this *GetKeysRequest) Validate() error {
 func (this *GetKeysResponse) Validate() error {
 	return nil
 }
+
+var _regex_SeekKeysRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *SeekKeysRequest) Validate() error {
+	if !_regex_SeekKeysRequest_Prefix.MatchString(this.Prefix) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Prefix", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Prefix))
+	}
 	return nil
 }
 func (this *SeekKeysResponse) Validate() error {
 	return nil
 }
+
+var _regex_GetRegexKeysRequest_Regex = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *GetRegexKeysRequest) Validate() error {
+	if !_regex_GetRegexKeysRequest_Regex.MatchString(this.Regex) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Regex", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Regex))
+	}
 	return nil
 }
 func (this *GetRegexKeysResponse) Validate() error {
@@ -71,14 +141,26 @@ func (this *GetResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
+
+var _regex_GetRegexRequest_Regex = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *GetRegexRequest) Validate() error {
+	if !_regex_GetRegexRequest_Regex.MatchString(this.Regex) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Regex", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Regex))
+	}
 	return nil
 }
 func (this *GetRegexResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
+
+var _regex_SeekRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *SeekRequest) Validate() error {
+	if !_regex_SeekRequest_Prefix.MatchString(this.Prefix) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Prefix", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Prefix))
+	}
 	return nil
 }
 func (this *SeekResponse) Validate() error {
@@ -95,71 +177,5 @@ func (this *PingRequest) Validate() error {
 	return nil
 }
 func (this *PingResponse) Validate() error {
-	return nil
-}
-func (this *Point) Validate() error {
-	return nil
-}
-func (this *Object) Validate() error {
-	if this.Point != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
-		}
-	}
-	// Validation of proto3 map<> fields is unsupported.
-	return nil
-}
-func (this *Directions) Validate() error {
-	return nil
-}
-func (this *Address) Validate() error {
-	return nil
-}
-func (this *Event) Validate() error {
-	if this.Object != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
-		}
-	}
-	if this.Direction != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Direction); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Direction", err)
-		}
-	}
-	return nil
-}
-func (this *Events) Validate() error {
-	if this.TriggerObject != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.TriggerObject); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("TriggerObject", err)
-		}
-	}
-	for _, item := range this.Events {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Events", err)
-			}
-		}
-	}
-	return nil
-}
-func (this *ObjectDetail) Validate() error {
-	if this.Object != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
-		}
-	}
-	if this.Address != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Address); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Address", err)
-		}
-	}
-	for _, item := range this.Events {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Events", err)
-			}
-		}
-	}
 	return nil
 }

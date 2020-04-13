@@ -47,7 +47,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 			val.UpdatedUnix = time.Now().Unix()
 		}
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
-		var events = map[string]*api.Event{}
+		var events = map[string]*api.Tracker{}
 		if len(val.Trackers) > 0 {
 			for _, tracker := range val.Trackers {
 				item, err := txn.Get([]byte(tracker))
@@ -70,7 +70,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 				}
 				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
 				dist := point1.GeoDistanceFrom(point2, true)
-				event := &api.Event{
+				event := &api.Tracker{
 					Object:        obj,
 					Distance:      dist,
 					Inside:        dist <= float64(val.Radius+obj.Radius),
@@ -103,7 +103,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 		}
 		if len(events) > 0 {
 			for _, event := range events {
-				detail.Events = append(detail.Events, event)
+				detail.Trackers = append(detail.Trackers, event)
 			}
 		}
 

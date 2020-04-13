@@ -6,17 +6,90 @@ option go_package = "api";
 import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 service GeoDB {
+    //Ping - input: empty, output: returns ok if server is healthy.
     rpc Ping(PingRequest) returns(PingResponse){};
+    //Set - input: a string(objectKey) Object map output: returns an array of updated object details.
+    //objects are upserted in the order they are sent
     rpc Set(SetRequest) returns(SetResponse){};
+    //Get - input: an array of object keys, output: returns an array of current object details
     rpc Get(GetRequest) returns(GetResponse){};
+    //GetRegex - input: a regex string, output: returns an array of current object details with keys that match the regex pattern
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
+    //Seek - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
     rpc Seek(SeekRequest) returns(SeekResponse){};
+    //SeekKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
     rpc SeekKeys(SeekKeysRequest) returns(SeekKeysResponse){};
+    //GetKeys -  input: none, output: returns all keys in database
     rpc GetKeys(GetKeysRequest) returns(GetKeysResponse){};
+    //GetRegexKeys -  input: a regex string, output: returns all keys in database that match the regex pattern
     rpc GetRegexKeys(GetRegexKeysRequest) returns(GetRegexKeysResponse){};
+    //Delete -  input: an array of object key strings to delete, output: none
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
+    //Stream -  input: a clientID(optional) and an array of object keys(optional),
+    //output: a stream of object details for realtime, targetted object geolocation updates
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
+    //StreamRegex -  input: a clientID(optional) a regex string(optional),
+    //output: a stream of object details for realtime, targetted object geolocation updates that match the regex pattern
     rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
+}
+
+message Point {
+    double lat =1;
+    double lon =2;
+}
+
+//An Object represents anything that has a unique identifier, and a geolocation.
+message Object {
+    string key =1; //a unique identifier
+    Point point =2; //geolocation lat/lon
+    int64 radius =3; //defaults to 100(meters)
+    TravelMode travel_mode =4; //defaults to driving
+    map<string, string> metadata =5; //optional metadata associated with the object
+    int64 expires_unix =6; //a unix timestamp in the future when the database should clean up the object. empty if no expiration.
+    repeated string trackers =7; //an array of foreigm object keys that represent other objects you want to track the distance, eta, directions, etc(see tracker)
+    int64 updated_unix =8; //unix timestamp representing last update (optional)
+}
+
+//Directions if using the google maps integration
+message Directions  {
+    string html_directions =1;
+    int64 eta =2;
+    int64 travel_dist =3;
+}
+
+//A human readable address that is generated from a lat,lon if using the google maps integration
+message Address {
+    string state =1;
+    string address =2;
+    string country =3;
+    string zip =4;
+    string county =5;
+    string city =6;
+}
+
+//Tracker is data associated with the object tracking mechanism- it tracks one obects relation to another.
+//An object can have many trackers representing a one-many relationship
+message Tracker {
+    Object object =1; //targe object
+    double distance =2; //distance to object
+    bool inside =3; //whether objects are overlapping
+    Directions direction =4; //directions from one object to annother
+    int64 timestamp_unix =5;
+}
+
+//ObjectDetail is an enhanced view of an Object containing a human readable address and the objects latest tracking information
+message ObjectDetail {
+    Object object =1;
+    Address address = 2;
+    repeated Tracker trackers =3;
+}
+
+//TravelMode is used to generate directions based on the type of travel the object is utilizing. only necessary if using google maps
+enum TravelMode {
+    Driving = 0;
+    Walking =1;
+    Bicycling =2;
+    Transit =3;
 }
 
 message StreamRequest {
@@ -30,7 +103,7 @@ message StreamResponse {
 
 message StreamRegexRequest {
     string client_id =1;
-    string regex =2;
+    string regex =2 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
 message StreamRegexResponse {
@@ -52,7 +125,7 @@ message GetKeysResponse {
 }
 
 message SeekKeysRequest {
-    string prefix =1;
+    string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
 message SeekKeysResponse {
@@ -61,7 +134,7 @@ message SeekKeysResponse {
 
 
 message GetRegexKeysRequest {
-    string regex =1;
+    string regex =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
 message GetRegexKeysResponse {
@@ -77,7 +150,7 @@ message GetResponse {
 }
 
 message GetRegexRequest {
-    string regex =1;
+    string regex =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
 message GetRegexResponse {
@@ -85,7 +158,7 @@ message GetRegexResponse {
 }
 
 message SeekRequest {
-    string prefix =1;
+    string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
 message SeekResponse {
@@ -102,61 +175,4 @@ message PingRequest {}
 
 message PingResponse {
     bool ok =1;
-}
-
-message Point {
-    double lat =1;
-    double lon =2;
-}
-
-message Object {
-    string key =1;
-    Point point =2;
-    int64 radius =3;
-    TravelMode travel_mode =4;
-    map<string, string> metadata =5;
-    int64 expires_unix =6;
-    repeated string trackers =7;
-    int64 updated_unix =8;
-}
-
-message Directions  {
-    string html_directions =1;
-    int64 eta =2;
-    int64 travel_dist =3;
-}
-
-message Address {
-    string state =1;
-    string address =2;
-    string country =3;
-    string zip =4;
-    string county =5;
-    string city =6;
-}
-
-message Event {
-    Object object =1;
-    double distance =2;
-    bool inside =3;
-    Directions direction =4;
-    int64 timestamp_unix =5;
-}
-
-message Events {
-    Object trigger_object =1;
-    repeated Event events =2;
-}
-
-message ObjectDetail {
-    Object object =1;
-    Address address = 2;
-    repeated Event events =3;
-}
-
-enum TravelMode {
-    Driving = 0;
-    Walking =1;
-    Bicycling =2;
-    Transit =3;
 }
