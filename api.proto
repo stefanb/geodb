@@ -7,58 +7,58 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 service GeoDB {
     rpc Ping(PingRequest) returns(PingResponse){};
-    rpc SetObject(SetObjectRequest) returns(SetObjectResponse){};
-    rpc GetObject(GetObjectRequest) returns(GetObjectResponse){};
-    rpc GetObjectRegex(GetObjectRegexRequest) returns(GetObjectRegexResponse){};
-    rpc SeekObject(SeekObjectRequest) returns(SeekObjectResponse){};
-    rpc DeleteObject(DeleteObjectRequest) returns(DeleteObjectResponse){};
-    rpc StreamObject(StreamObjectRequest) returns(stream StreamObjectResponse){};
+    rpc Set(SetRequest) returns(SetResponse){};
+    rpc Get(GetRequest) returns(GetResponse){};
+    rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
+    rpc Seek(SeekRequest) returns(SeekResponse){};
+    rpc Delete(DeleteRequest) returns(DeleteResponse){};
+    rpc Stream(StreamRequest) returns(stream StreamResponse){};
 }
 
-message StreamObjectRequest {
+message StreamRequest {
     string client_id =1;
     string regex =2;
 }
 
-message StreamObjectResponse {
+message StreamResponse {
     ObjectDetail object =1;
 }
 
-message SetObjectRequest {
+message SetRequest {
     map<string, Object> object =1;
 }
 
-message SetObjectResponse {}
+message SetResponse {}
 
-message GetObjectRequest {
+message GetRequest {
     repeated string keys =1;
 }
 
-message GetObjectResponse {
+message GetResponse {
     map<string, Object> object= 1;
 }
 
-message GetObjectRegexRequest {
+message GetRegexRequest {
     string regex =1;
 }
 
-message GetObjectRegexResponse {
+message GetRegexResponse {
     map<string, Object> object= 1;
 }
 
-message SeekObjectRequest {
+message SeekRequest {
     string prefix =1;
 }
 
-message SeekObjectResponse {
+message SeekResponse {
     map<string, Object> object= 1;
 }
 
-message DeleteObjectRequest {
+message DeleteRequest {
     repeated string keys =1;
 }
 
-message DeleteObjectResponse {}
+message DeleteResponse {}
 
 message PingRequest {}
 

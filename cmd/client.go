@@ -36,7 +36,7 @@ var setCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		client := api.NewGeoDBClient(conn)
-		resp, err := client.SetObject(context.Background(), &api.SetObjectRequest{
+		resp, err := client.Set(context.Background(), &api.SetRequest{
 			Object: map[string]*api.Object{
 				key: &api.Object{
 					Point: &api.Point{
@@ -66,7 +66,7 @@ var getCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		client := api.NewGeoDBClient(conn)
-		resp, err := client.GetObject(context.Background(), &api.GetObjectRequest{
+		resp, err := client.Get(context.Background(), &api.GetRequest{
 			Keys: keys,
 		})
 		if err != nil {
@@ -85,7 +85,7 @@ var streamCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		client := api.NewGeoDBClient(conn)
-		resp, err := client.StreamObject(context.Background(), &api.StreamObjectRequest{})
+		resp, err := client.Stream(context.Background(), &api.StreamRequest{})
 		if err != nil {
 			log.Fatal(err.Error())
 		}

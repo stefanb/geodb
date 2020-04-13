@@ -25,7 +25,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type StreamObjectRequest struct {
+type StreamRequest struct {
 	ClientId             string   `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	Regex                string   `protobuf:"bytes,2,opt,name=regex,proto3" json:"regex,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -33,457 +33,457 @@ type StreamObjectRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *StreamObjectRequest) Reset()         { *m = StreamObjectRequest{} }
-func (m *StreamObjectRequest) String() string { return proto.CompactTextString(m) }
-func (*StreamObjectRequest) ProtoMessage()    {}
-func (*StreamObjectRequest) Descriptor() ([]byte, []int) {
+func (m *StreamRequest) Reset()         { *m = StreamRequest{} }
+func (m *StreamRequest) String() string { return proto.CompactTextString(m) }
+func (*StreamRequest) ProtoMessage()    {}
+func (*StreamRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{0}
 }
 
-func (m *StreamObjectRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StreamObjectRequest.Unmarshal(m, b)
+func (m *StreamRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamRequest.Unmarshal(m, b)
 }
-func (m *StreamObjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StreamObjectRequest.Marshal(b, m, deterministic)
+func (m *StreamRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamRequest.Marshal(b, m, deterministic)
 }
-func (m *StreamObjectRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StreamObjectRequest.Merge(m, src)
+func (m *StreamRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamRequest.Merge(m, src)
 }
-func (m *StreamObjectRequest) XXX_Size() int {
-	return xxx_messageInfo_StreamObjectRequest.Size(m)
+func (m *StreamRequest) XXX_Size() int {
+	return xxx_messageInfo_StreamRequest.Size(m)
 }
-func (m *StreamObjectRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_StreamObjectRequest.DiscardUnknown(m)
+func (m *StreamRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_StreamObjectRequest proto.InternalMessageInfo
+var xxx_messageInfo_StreamRequest proto.InternalMessageInfo
 
-func (m *StreamObjectRequest) GetClientId() string {
+func (m *StreamRequest) GetClientId() string {
 	if m != nil {
 		return m.ClientId
 	}
 	return ""
 }
 
-func (m *StreamObjectRequest) GetRegex() string {
+func (m *StreamRequest) GetRegex() string {
 	if m != nil {
 		return m.Regex
 	}
 	return ""
 }
 
-type StreamObjectResponse struct {
+type StreamResponse struct {
 	Object               *ObjectDetail `protobuf:"bytes,1,opt,name=object,proto3" json:"object,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}      `json:"-"`
 	XXX_unrecognized     []byte        `json:"-"`
 	XXX_sizecache        int32         `json:"-"`
 }
 
-func (m *StreamObjectResponse) Reset()         { *m = StreamObjectResponse{} }
-func (m *StreamObjectResponse) String() string { return proto.CompactTextString(m) }
-func (*StreamObjectResponse) ProtoMessage()    {}
-func (*StreamObjectResponse) Descriptor() ([]byte, []int) {
+func (m *StreamResponse) Reset()         { *m = StreamResponse{} }
+func (m *StreamResponse) String() string { return proto.CompactTextString(m) }
+func (*StreamResponse) ProtoMessage()    {}
+func (*StreamResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{1}
 }
 
-func (m *StreamObjectResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_StreamObjectResponse.Unmarshal(m, b)
+func (m *StreamResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StreamResponse.Unmarshal(m, b)
 }
-func (m *StreamObjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_StreamObjectResponse.Marshal(b, m, deterministic)
+func (m *StreamResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StreamResponse.Marshal(b, m, deterministic)
 }
-func (m *StreamObjectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StreamObjectResponse.Merge(m, src)
+func (m *StreamResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StreamResponse.Merge(m, src)
 }
-func (m *StreamObjectResponse) XXX_Size() int {
-	return xxx_messageInfo_StreamObjectResponse.Size(m)
+func (m *StreamResponse) XXX_Size() int {
+	return xxx_messageInfo_StreamResponse.Size(m)
 }
-func (m *StreamObjectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_StreamObjectResponse.DiscardUnknown(m)
+func (m *StreamResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_StreamResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_StreamObjectResponse proto.InternalMessageInfo
+var xxx_messageInfo_StreamResponse proto.InternalMessageInfo
 
-func (m *StreamObjectResponse) GetObject() *ObjectDetail {
+func (m *StreamResponse) GetObject() *ObjectDetail {
 	if m != nil {
 		return m.Object
 	}
 	return nil
 }
 
-type SetObjectRequest struct {
+type SetRequest struct {
 	Object               map[string]*Object `protobuf:"bytes,1,rep,name=object,proto3" json:"object,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
 }
 
-func (m *SetObjectRequest) Reset()         { *m = SetObjectRequest{} }
-func (m *SetObjectRequest) String() string { return proto.CompactTextString(m) }
-func (*SetObjectRequest) ProtoMessage()    {}
-func (*SetObjectRequest) Descriptor() ([]byte, []int) {
+func (m *SetRequest) Reset()         { *m = SetRequest{} }
+func (m *SetRequest) String() string { return proto.CompactTextString(m) }
+func (*SetRequest) ProtoMessage()    {}
+func (*SetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{2}
 }
 
-func (m *SetObjectRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SetObjectRequest.Unmarshal(m, b)
+func (m *SetRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetRequest.Unmarshal(m, b)
 }
-func (m *SetObjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SetObjectRequest.Marshal(b, m, deterministic)
+func (m *SetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetRequest.Marshal(b, m, deterministic)
 }
-func (m *SetObjectRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SetObjectRequest.Merge(m, src)
+func (m *SetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetRequest.Merge(m, src)
 }
-func (m *SetObjectRequest) XXX_Size() int {
-	return xxx_messageInfo_SetObjectRequest.Size(m)
+func (m *SetRequest) XXX_Size() int {
+	return xxx_messageInfo_SetRequest.Size(m)
 }
-func (m *SetObjectRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SetObjectRequest.DiscardUnknown(m)
+func (m *SetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SetObjectRequest proto.InternalMessageInfo
+var xxx_messageInfo_SetRequest proto.InternalMessageInfo
 
-func (m *SetObjectRequest) GetObject() map[string]*Object {
+func (m *SetRequest) GetObject() map[string]*Object {
 	if m != nil {
 		return m.Object
 	}
 	return nil
 }
 
-type SetObjectResponse struct {
+type SetResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SetObjectResponse) Reset()         { *m = SetObjectResponse{} }
-func (m *SetObjectResponse) String() string { return proto.CompactTextString(m) }
-func (*SetObjectResponse) ProtoMessage()    {}
-func (*SetObjectResponse) Descriptor() ([]byte, []int) {
+func (m *SetResponse) Reset()         { *m = SetResponse{} }
+func (m *SetResponse) String() string { return proto.CompactTextString(m) }
+func (*SetResponse) ProtoMessage()    {}
+func (*SetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{3}
 }
 
-func (m *SetObjectResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SetObjectResponse.Unmarshal(m, b)
+func (m *SetResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SetResponse.Unmarshal(m, b)
 }
-func (m *SetObjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SetObjectResponse.Marshal(b, m, deterministic)
+func (m *SetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SetResponse.Marshal(b, m, deterministic)
 }
-func (m *SetObjectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SetObjectResponse.Merge(m, src)
+func (m *SetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SetResponse.Merge(m, src)
 }
-func (m *SetObjectResponse) XXX_Size() int {
-	return xxx_messageInfo_SetObjectResponse.Size(m)
+func (m *SetResponse) XXX_Size() int {
+	return xxx_messageInfo_SetResponse.Size(m)
 }
-func (m *SetObjectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SetObjectResponse.DiscardUnknown(m)
+func (m *SetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SetObjectResponse proto.InternalMessageInfo
+var xxx_messageInfo_SetResponse proto.InternalMessageInfo
 
-type GetObjectRequest struct {
+type GetRequest struct {
 	Keys                 []string `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetObjectRequest) Reset()         { *m = GetObjectRequest{} }
-func (m *GetObjectRequest) String() string { return proto.CompactTextString(m) }
-func (*GetObjectRequest) ProtoMessage()    {}
-func (*GetObjectRequest) Descriptor() ([]byte, []int) {
+func (m *GetRequest) Reset()         { *m = GetRequest{} }
+func (m *GetRequest) String() string { return proto.CompactTextString(m) }
+func (*GetRequest) ProtoMessage()    {}
+func (*GetRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{4}
 }
 
-func (m *GetObjectRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetObjectRequest.Unmarshal(m, b)
+func (m *GetRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetRequest.Unmarshal(m, b)
 }
-func (m *GetObjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetObjectRequest.Marshal(b, m, deterministic)
+func (m *GetRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetRequest.Marshal(b, m, deterministic)
 }
-func (m *GetObjectRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetObjectRequest.Merge(m, src)
+func (m *GetRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetRequest.Merge(m, src)
 }
-func (m *GetObjectRequest) XXX_Size() int {
-	return xxx_messageInfo_GetObjectRequest.Size(m)
+func (m *GetRequest) XXX_Size() int {
+	return xxx_messageInfo_GetRequest.Size(m)
 }
-func (m *GetObjectRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetObjectRequest.DiscardUnknown(m)
+func (m *GetRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetObjectRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetRequest proto.InternalMessageInfo
 
-func (m *GetObjectRequest) GetKeys() []string {
+func (m *GetRequest) GetKeys() []string {
 	if m != nil {
 		return m.Keys
 	}
 	return nil
 }
 
-type GetObjectResponse struct {
+type GetResponse struct {
 	Object               map[string]*Object `protobuf:"bytes,1,rep,name=object,proto3" json:"object,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
 }
 
-func (m *GetObjectResponse) Reset()         { *m = GetObjectResponse{} }
-func (m *GetObjectResponse) String() string { return proto.CompactTextString(m) }
-func (*GetObjectResponse) ProtoMessage()    {}
-func (*GetObjectResponse) Descriptor() ([]byte, []int) {
+func (m *GetResponse) Reset()         { *m = GetResponse{} }
+func (m *GetResponse) String() string { return proto.CompactTextString(m) }
+func (*GetResponse) ProtoMessage()    {}
+func (*GetResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{5}
 }
 
-func (m *GetObjectResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetObjectResponse.Unmarshal(m, b)
+func (m *GetResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetResponse.Unmarshal(m, b)
 }
-func (m *GetObjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetObjectResponse.Marshal(b, m, deterministic)
+func (m *GetResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetResponse.Marshal(b, m, deterministic)
 }
-func (m *GetObjectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetObjectResponse.Merge(m, src)
+func (m *GetResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetResponse.Merge(m, src)
 }
-func (m *GetObjectResponse) XXX_Size() int {
-	return xxx_messageInfo_GetObjectResponse.Size(m)
+func (m *GetResponse) XXX_Size() int {
+	return xxx_messageInfo_GetResponse.Size(m)
 }
-func (m *GetObjectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetObjectResponse.DiscardUnknown(m)
+func (m *GetResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetObjectResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetResponse proto.InternalMessageInfo
 
-func (m *GetObjectResponse) GetObject() map[string]*Object {
+func (m *GetResponse) GetObject() map[string]*Object {
 	if m != nil {
 		return m.Object
 	}
 	return nil
 }
 
-type GetObjectRegexRequest struct {
+type GetRegexRequest struct {
 	Regex                string   `protobuf:"bytes,1,opt,name=regex,proto3" json:"regex,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *GetObjectRegexRequest) Reset()         { *m = GetObjectRegexRequest{} }
-func (m *GetObjectRegexRequest) String() string { return proto.CompactTextString(m) }
-func (*GetObjectRegexRequest) ProtoMessage()    {}
-func (*GetObjectRegexRequest) Descriptor() ([]byte, []int) {
+func (m *GetRegexRequest) Reset()         { *m = GetRegexRequest{} }
+func (m *GetRegexRequest) String() string { return proto.CompactTextString(m) }
+func (*GetRegexRequest) ProtoMessage()    {}
+func (*GetRegexRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{6}
 }
 
-func (m *GetObjectRegexRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetObjectRegexRequest.Unmarshal(m, b)
+func (m *GetRegexRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetRegexRequest.Unmarshal(m, b)
 }
-func (m *GetObjectRegexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetObjectRegexRequest.Marshal(b, m, deterministic)
+func (m *GetRegexRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetRegexRequest.Marshal(b, m, deterministic)
 }
-func (m *GetObjectRegexRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetObjectRegexRequest.Merge(m, src)
+func (m *GetRegexRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetRegexRequest.Merge(m, src)
 }
-func (m *GetObjectRegexRequest) XXX_Size() int {
-	return xxx_messageInfo_GetObjectRegexRequest.Size(m)
+func (m *GetRegexRequest) XXX_Size() int {
+	return xxx_messageInfo_GetRegexRequest.Size(m)
 }
-func (m *GetObjectRegexRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetObjectRegexRequest.DiscardUnknown(m)
+func (m *GetRegexRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetRegexRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetObjectRegexRequest proto.InternalMessageInfo
+var xxx_messageInfo_GetRegexRequest proto.InternalMessageInfo
 
-func (m *GetObjectRegexRequest) GetRegex() string {
+func (m *GetRegexRequest) GetRegex() string {
 	if m != nil {
 		return m.Regex
 	}
 	return ""
 }
 
-type GetObjectRegexResponse struct {
+type GetRegexResponse struct {
 	Object               map[string]*Object `protobuf:"bytes,1,rep,name=object,proto3" json:"object,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
 }
 
-func (m *GetObjectRegexResponse) Reset()         { *m = GetObjectRegexResponse{} }
-func (m *GetObjectRegexResponse) String() string { return proto.CompactTextString(m) }
-func (*GetObjectRegexResponse) ProtoMessage()    {}
-func (*GetObjectRegexResponse) Descriptor() ([]byte, []int) {
+func (m *GetRegexResponse) Reset()         { *m = GetRegexResponse{} }
+func (m *GetRegexResponse) String() string { return proto.CompactTextString(m) }
+func (*GetRegexResponse) ProtoMessage()    {}
+func (*GetRegexResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{7}
 }
 
-func (m *GetObjectRegexResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_GetObjectRegexResponse.Unmarshal(m, b)
+func (m *GetRegexResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetRegexResponse.Unmarshal(m, b)
 }
-func (m *GetObjectRegexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_GetObjectRegexResponse.Marshal(b, m, deterministic)
+func (m *GetRegexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetRegexResponse.Marshal(b, m, deterministic)
 }
-func (m *GetObjectRegexResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_GetObjectRegexResponse.Merge(m, src)
+func (m *GetRegexResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetRegexResponse.Merge(m, src)
 }
-func (m *GetObjectRegexResponse) XXX_Size() int {
-	return xxx_messageInfo_GetObjectRegexResponse.Size(m)
+func (m *GetRegexResponse) XXX_Size() int {
+	return xxx_messageInfo_GetRegexResponse.Size(m)
 }
-func (m *GetObjectRegexResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_GetObjectRegexResponse.DiscardUnknown(m)
+func (m *GetRegexResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetRegexResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_GetObjectRegexResponse proto.InternalMessageInfo
+var xxx_messageInfo_GetRegexResponse proto.InternalMessageInfo
 
-func (m *GetObjectRegexResponse) GetObject() map[string]*Object {
+func (m *GetRegexResponse) GetObject() map[string]*Object {
 	if m != nil {
 		return m.Object
 	}
 	return nil
 }
 
-type SeekObjectRequest struct {
+type SeekRequest struct {
 	Prefix               string   `protobuf:"bytes,1,opt,name=prefix,proto3" json:"prefix,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *SeekObjectRequest) Reset()         { *m = SeekObjectRequest{} }
-func (m *SeekObjectRequest) String() string { return proto.CompactTextString(m) }
-func (*SeekObjectRequest) ProtoMessage()    {}
-func (*SeekObjectRequest) Descriptor() ([]byte, []int) {
+func (m *SeekRequest) Reset()         { *m = SeekRequest{} }
+func (m *SeekRequest) String() string { return proto.CompactTextString(m) }
+func (*SeekRequest) ProtoMessage()    {}
+func (*SeekRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{8}
 }
 
-func (m *SeekObjectRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SeekObjectRequest.Unmarshal(m, b)
+func (m *SeekRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SeekRequest.Unmarshal(m, b)
 }
-func (m *SeekObjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SeekObjectRequest.Marshal(b, m, deterministic)
+func (m *SeekRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SeekRequest.Marshal(b, m, deterministic)
 }
-func (m *SeekObjectRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SeekObjectRequest.Merge(m, src)
+func (m *SeekRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SeekRequest.Merge(m, src)
 }
-func (m *SeekObjectRequest) XXX_Size() int {
-	return xxx_messageInfo_SeekObjectRequest.Size(m)
+func (m *SeekRequest) XXX_Size() int {
+	return xxx_messageInfo_SeekRequest.Size(m)
 }
-func (m *SeekObjectRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_SeekObjectRequest.DiscardUnknown(m)
+func (m *SeekRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SeekRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SeekObjectRequest proto.InternalMessageInfo
+var xxx_messageInfo_SeekRequest proto.InternalMessageInfo
 
-func (m *SeekObjectRequest) GetPrefix() string {
+func (m *SeekRequest) GetPrefix() string {
 	if m != nil {
 		return m.Prefix
 	}
 	return ""
 }
 
-type SeekObjectResponse struct {
+type SeekResponse struct {
 	Object               map[string]*Object `protobuf:"bytes,1,rep,name=object,proto3" json:"object,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
 }
 
-func (m *SeekObjectResponse) Reset()         { *m = SeekObjectResponse{} }
-func (m *SeekObjectResponse) String() string { return proto.CompactTextString(m) }
-func (*SeekObjectResponse) ProtoMessage()    {}
-func (*SeekObjectResponse) Descriptor() ([]byte, []int) {
+func (m *SeekResponse) Reset()         { *m = SeekResponse{} }
+func (m *SeekResponse) String() string { return proto.CompactTextString(m) }
+func (*SeekResponse) ProtoMessage()    {}
+func (*SeekResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{9}
 }
 
-func (m *SeekObjectResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SeekObjectResponse.Unmarshal(m, b)
+func (m *SeekResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SeekResponse.Unmarshal(m, b)
 }
-func (m *SeekObjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SeekObjectResponse.Marshal(b, m, deterministic)
+func (m *SeekResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SeekResponse.Marshal(b, m, deterministic)
 }
-func (m *SeekObjectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SeekObjectResponse.Merge(m, src)
+func (m *SeekResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SeekResponse.Merge(m, src)
 }
-func (m *SeekObjectResponse) XXX_Size() int {
-	return xxx_messageInfo_SeekObjectResponse.Size(m)
+func (m *SeekResponse) XXX_Size() int {
+	return xxx_messageInfo_SeekResponse.Size(m)
 }
-func (m *SeekObjectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SeekObjectResponse.DiscardUnknown(m)
+func (m *SeekResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_SeekResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_SeekObjectResponse proto.InternalMessageInfo
+var xxx_messageInfo_SeekResponse proto.InternalMessageInfo
 
-func (m *SeekObjectResponse) GetObject() map[string]*Object {
+func (m *SeekResponse) GetObject() map[string]*Object {
 	if m != nil {
 		return m.Object
 	}
 	return nil
 }
 
-type DeleteObjectRequest struct {
+type DeleteRequest struct {
 	Keys                 []string `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteObjectRequest) Reset()         { *m = DeleteObjectRequest{} }
-func (m *DeleteObjectRequest) String() string { return proto.CompactTextString(m) }
-func (*DeleteObjectRequest) ProtoMessage()    {}
-func (*DeleteObjectRequest) Descriptor() ([]byte, []int) {
+func (m *DeleteRequest) Reset()         { *m = DeleteRequest{} }
+func (m *DeleteRequest) String() string { return proto.CompactTextString(m) }
+func (*DeleteRequest) ProtoMessage()    {}
+func (*DeleteRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{10}
 }
 
-func (m *DeleteObjectRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteObjectRequest.Unmarshal(m, b)
+func (m *DeleteRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteRequest.Unmarshal(m, b)
 }
-func (m *DeleteObjectRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteObjectRequest.Marshal(b, m, deterministic)
+func (m *DeleteRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteRequest.Marshal(b, m, deterministic)
 }
-func (m *DeleteObjectRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteObjectRequest.Merge(m, src)
+func (m *DeleteRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteRequest.Merge(m, src)
 }
-func (m *DeleteObjectRequest) XXX_Size() int {
-	return xxx_messageInfo_DeleteObjectRequest.Size(m)
+func (m *DeleteRequest) XXX_Size() int {
+	return xxx_messageInfo_DeleteRequest.Size(m)
 }
-func (m *DeleteObjectRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteObjectRequest.DiscardUnknown(m)
+func (m *DeleteRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteObjectRequest proto.InternalMessageInfo
+var xxx_messageInfo_DeleteRequest proto.InternalMessageInfo
 
-func (m *DeleteObjectRequest) GetKeys() []string {
+func (m *DeleteRequest) GetKeys() []string {
 	if m != nil {
 		return m.Keys
 	}
 	return nil
 }
 
-type DeleteObjectResponse struct {
+type DeleteResponse struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DeleteObjectResponse) Reset()         { *m = DeleteObjectResponse{} }
-func (m *DeleteObjectResponse) String() string { return proto.CompactTextString(m) }
-func (*DeleteObjectResponse) ProtoMessage()    {}
-func (*DeleteObjectResponse) Descriptor() ([]byte, []int) {
+func (m *DeleteResponse) Reset()         { *m = DeleteResponse{} }
+func (m *DeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*DeleteResponse) ProtoMessage()    {}
+func (*DeleteResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_00212fb1f9d3bf1c, []int{11}
 }
 
-func (m *DeleteObjectResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DeleteObjectResponse.Unmarshal(m, b)
+func (m *DeleteResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_DeleteResponse.Unmarshal(m, b)
 }
-func (m *DeleteObjectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DeleteObjectResponse.Marshal(b, m, deterministic)
+func (m *DeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_DeleteResponse.Marshal(b, m, deterministic)
 }
-func (m *DeleteObjectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DeleteObjectResponse.Merge(m, src)
+func (m *DeleteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DeleteResponse.Merge(m, src)
 }
-func (m *DeleteObjectResponse) XXX_Size() int {
-	return xxx_messageInfo_DeleteObjectResponse.Size(m)
+func (m *DeleteResponse) XXX_Size() int {
+	return xxx_messageInfo_DeleteResponse.Size(m)
 }
-func (m *DeleteObjectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DeleteObjectResponse.DiscardUnknown(m)
+func (m *DeleteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_DeleteResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DeleteObjectResponse proto.InternalMessageInfo
+var xxx_messageInfo_DeleteResponse proto.InternalMessageInfo
 
 type PingRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -847,22 +847,22 @@ func (m *Events) GetEvents() []*Event {
 }
 
 func init() {
-	proto.RegisterType((*StreamObjectRequest)(nil), "api.StreamObjectRequest")
-	proto.RegisterType((*StreamObjectResponse)(nil), "api.StreamObjectResponse")
-	proto.RegisterType((*SetObjectRequest)(nil), "api.SetObjectRequest")
-	proto.RegisterMapType((map[string]*Object)(nil), "api.SetObjectRequest.ObjectEntry")
-	proto.RegisterType((*SetObjectResponse)(nil), "api.SetObjectResponse")
-	proto.RegisterType((*GetObjectRequest)(nil), "api.GetObjectRequest")
-	proto.RegisterType((*GetObjectResponse)(nil), "api.GetObjectResponse")
-	proto.RegisterMapType((map[string]*Object)(nil), "api.GetObjectResponse.ObjectEntry")
-	proto.RegisterType((*GetObjectRegexRequest)(nil), "api.GetObjectRegexRequest")
-	proto.RegisterType((*GetObjectRegexResponse)(nil), "api.GetObjectRegexResponse")
-	proto.RegisterMapType((map[string]*Object)(nil), "api.GetObjectRegexResponse.ObjectEntry")
-	proto.RegisterType((*SeekObjectRequest)(nil), "api.SeekObjectRequest")
-	proto.RegisterType((*SeekObjectResponse)(nil), "api.SeekObjectResponse")
-	proto.RegisterMapType((map[string]*Object)(nil), "api.SeekObjectResponse.ObjectEntry")
-	proto.RegisterType((*DeleteObjectRequest)(nil), "api.DeleteObjectRequest")
-	proto.RegisterType((*DeleteObjectResponse)(nil), "api.DeleteObjectResponse")
+	proto.RegisterType((*StreamRequest)(nil), "api.StreamRequest")
+	proto.RegisterType((*StreamResponse)(nil), "api.StreamResponse")
+	proto.RegisterType((*SetRequest)(nil), "api.SetRequest")
+	proto.RegisterMapType((map[string]*Object)(nil), "api.SetRequest.ObjectEntry")
+	proto.RegisterType((*SetResponse)(nil), "api.SetResponse")
+	proto.RegisterType((*GetRequest)(nil), "api.GetRequest")
+	proto.RegisterType((*GetResponse)(nil), "api.GetResponse")
+	proto.RegisterMapType((map[string]*Object)(nil), "api.GetResponse.ObjectEntry")
+	proto.RegisterType((*GetRegexRequest)(nil), "api.GetRegexRequest")
+	proto.RegisterType((*GetRegexResponse)(nil), "api.GetRegexResponse")
+	proto.RegisterMapType((map[string]*Object)(nil), "api.GetRegexResponse.ObjectEntry")
+	proto.RegisterType((*SeekRequest)(nil), "api.SeekRequest")
+	proto.RegisterType((*SeekResponse)(nil), "api.SeekResponse")
+	proto.RegisterMapType((map[string]*Object)(nil), "api.SeekResponse.ObjectEntry")
+	proto.RegisterType((*DeleteRequest)(nil), "api.DeleteRequest")
+	proto.RegisterType((*DeleteResponse)(nil), "api.DeleteResponse")
 	proto.RegisterType((*PingRequest)(nil), "api.PingRequest")
 	proto.RegisterType((*PingResponse)(nil), "api.PingResponse")
 	proto.RegisterType((*Point)(nil), "api.Point")
@@ -876,59 +876,58 @@ func init() {
 func init() { proto.RegisterFile("api.proto", fileDescriptor_00212fb1f9d3bf1c) }
 
 var fileDescriptor_00212fb1f9d3bf1c = []byte{
-	// 819 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0xdd, 0x6e, 0xeb, 0x44,
-	0x10, 0x8e, 0x93, 0x38, 0x24, 0x93, 0x1f, 0x25, 0xdb, 0x9c, 0xe0, 0xe3, 0x23, 0xa1, 0x76, 0x2b,
-	0xa0, 0x55, 0x95, 0x14, 0x05, 0x81, 0xa0, 0x45, 0xaa, 0xa8, 0x5a, 0x02, 0x42, 0xa8, 0x95, 0x0b,
-	0x42, 0xe2, 0x26, 0xb8, 0xf1, 0xd4, 0x2c, 0x49, 0x6c, 0x63, 0x6f, 0xda, 0xf4, 0x09, 0x78, 0x02,
-	0x84, 0xb8, 0xe4, 0x39, 0x78, 0x09, 0x1e, 0x09, 0x79, 0x77, 0x93, 0x6e, 0x5c, 0x97, 0xd3, 0x9b,
-	0xde, 0xed, 0xce, 0x7c, 0xf3, 0xed, 0x7c, 0x33, 0xeb, 0xf1, 0x42, 0xcd, 0x8d, 0xd8, 0x20, 0x8a,
-	0x43, 0x1e, 0x92, 0x92, 0x1b, 0x31, 0xfb, 0x53, 0x9f, 0xf1, 0x5f, 0x16, 0xd7, 0x83, 0x49, 0x38,
-	0x3f, 0x9c, 0xdf, 0x31, 0x3e, 0x0d, 0xef, 0x0e, 0xfd, 0xb0, 0x2f, 0x10, 0xfd, 0x5b, 0x77, 0xc6,
-	0x3c, 0x97, 0x87, 0x71, 0x72, 0xb8, 0x5e, 0xca, 0x60, 0xfa, 0x35, 0x6c, 0x5d, 0xf1, 0x18, 0xdd,
-	0xf9, 0xc5, 0xf5, 0xaf, 0x38, 0xe1, 0x0e, 0xfe, 0xb6, 0xc0, 0x84, 0x93, 0x37, 0x50, 0x9b, 0xcc,
-	0x18, 0x06, 0x7c, 0xcc, 0x3c, 0xcb, 0xd8, 0x36, 0xf6, 0x6a, 0x4e, 0x55, 0x1a, 0xbe, 0xf1, 0x48,
-	0x17, 0xcc, 0x18, 0x7d, 0x5c, 0x5a, 0x45, 0xe1, 0x90, 0x1b, 0xfa, 0x25, 0x74, 0x37, 0x99, 0x92,
-	0x28, 0x0c, 0x12, 0x24, 0xfb, 0x50, 0x09, 0x85, 0x45, 0xf0, 0xd4, 0x87, 0x9d, 0x41, 0x9a, 0xba,
-	0x04, 0x9d, 0x21, 0x77, 0xd9, 0xcc, 0x51, 0x00, 0xfa, 0x87, 0x01, 0xed, 0x2b, 0xe4, 0x9b, 0xa9,
-	0x7c, 0xae, 0xc5, 0x97, 0xf6, 0xea, 0xc3, 0x1d, 0x11, 0x9f, 0x85, 0x29, 0xc2, 0xf3, 0x80, 0xc7,
-	0xf7, 0x2b, 0x3e, 0xfb, 0x2b, 0xa8, 0x6b, 0x66, 0xd2, 0x86, 0xd2, 0x14, 0xef, 0x95, 0x9c, 0x74,
-	0x49, 0x76, 0xc0, 0xbc, 0x75, 0x67, 0x0b, 0x14, 0x4a, 0xea, 0xc3, 0xba, 0x96, 0x9a, 0x23, 0x3d,
-	0x47, 0xc5, 0xcf, 0x0c, 0xba, 0x05, 0x1d, 0xed, 0x3c, 0xa9, 0x8b, 0x7e, 0x00, 0xed, 0x51, 0x36,
-	0x57, 0x02, 0xe5, 0x29, 0xde, 0x27, 0x22, 0xd3, 0x9a, 0x23, 0xd6, 0xf4, 0x4f, 0x03, 0x3a, 0xa3,
-	0x6c, 0x34, 0x39, 0xca, 0xa8, 0xa2, 0xe2, 0xe8, 0x47, 0xb8, 0x17, 0x95, 0xd5, 0x87, 0x57, 0xda,
-	0x81, 0x3e, 0x2e, 0x57, 0x32, 0xd6, 0x0d, 0x36, 0xf4, 0x06, 0xff, 0x6d, 0x40, 0x2f, 0x8b, 0x57,
-	0x6a, 0x4e, 0x32, 0x6a, 0x3e, 0xcc, 0xaa, 0xd1, 0xc0, 0x2f, 0x2a, 0xe9, 0x20, 0xed, 0x14, 0x4e,
-	0x37, 0xbb, 0xd2, 0x83, 0x4a, 0x14, 0xe3, 0x0d, 0x5b, 0xe9, 0x51, 0x3b, 0xfa, 0x97, 0x01, 0x44,
-	0x47, 0x2b, 0x31, 0xc7, 0x19, 0x31, 0xbb, 0xea, 0xc2, 0x65, 0x81, 0x2f, 0x2a, 0x64, 0x1f, 0xb6,
-	0xce, 0x70, 0x86, 0x1c, 0xdf, 0x7e, 0xc1, 0x7a, 0xd0, 0xdd, 0x84, 0xaa, 0x0b, 0xda, 0x84, 0xfa,
-	0x25, 0x0b, 0x7c, 0x15, 0x4a, 0xdf, 0x83, 0x86, 0xdc, 0x2a, 0x99, 0x2d, 0x28, 0x86, 0x53, 0x91,
-	0x59, 0xd5, 0x29, 0x86, 0x53, 0x7a, 0x00, 0xe6, 0x65, 0xc8, 0x02, 0x9e, 0xe6, 0x3c, 0x73, 0xe5,
-	0xd7, 0x6a, 0x38, 0xe9, 0x52, 0x58, 0xc2, 0x40, 0x64, 0x9c, 0x5a, 0xc2, 0x80, 0xfe, 0x53, 0x84,
-	0x8a, 0x3c, 0x2e, 0x47, 0xe2, 0x36, 0x98, 0x51, 0xca, 0xa4, 0x24, 0x82, 0x90, 0x28, 0xb8, 0x1d,
-	0xe9, 0x48, 0x3b, 0x12, 0xbb, 0x1e, 0x5b, 0x24, 0x56, 0x69, 0xdb, 0xd8, 0x2b, 0x39, 0x6a, 0x47,
-	0x3e, 0x81, 0xea, 0x1c, 0xb9, 0xeb, 0xb9, 0xdc, 0xb5, 0xca, 0xa2, 0xf8, 0xaf, 0xb5, 0xfa, 0x0c,
-	0xbe, 0x53, 0x3e, 0x59, 0xf2, 0x35, 0x94, 0xec, 0x40, 0x03, 0x97, 0x11, 0x8b, 0x31, 0x19, 0x2f,
-	0x02, 0xb6, 0xb4, 0x4c, 0x41, 0x5a, 0x57, 0xb6, 0x1f, 0x02, 0xb6, 0x24, 0x07, 0xd0, 0xf1, 0x31,
-	0xbc, 0xc1, 0x60, 0x82, 0x63, 0x1e, 0x33, 0xdf, 0xc7, 0x38, 0xb1, 0x2a, 0xa2, 0x8a, 0xed, 0x95,
-	0xe3, 0x7b, 0x65, 0x4f, 0xf9, 0x16, 0x91, 0xe7, 0x72, 0xf4, 0x24, 0xdf, 0x3b, 0x92, 0x4f, 0xd9,
-	0x52, 0x3e, 0xfb, 0x18, 0x9a, 0x1b, 0xd9, 0xe4, 0x94, 0xa1, 0xab, 0x77, 0xba, 0xa6, 0x37, 0xf7,
-	0x47, 0x68, 0xe8, 0xf3, 0x8f, 0xec, 0x66, 0x46, 0xe4, 0xc6, 0xa5, 0x50, 0x2e, 0x42, 0xa1, 0x82,
-	0xb7, 0x18, 0xf0, 0xc4, 0x2a, 0x8a, 0xca, 0xc8, 0xb2, 0x9e, 0xa7, 0x26, 0x47, 0x79, 0xe8, 0xef,
-	0x06, 0x98, 0xc2, 0xf2, 0x3c, 0x4a, 0x1b, 0xaa, 0x1e, 0x4b, 0xb8, 0x1b, 0x4c, 0x50, 0x35, 0x77,
-	0xbd, 0x4f, 0x5b, 0xc4, 0x82, 0x84, 0x79, 0x28, 0x5a, 0x54, 0x75, 0xd4, 0x8e, 0xbc, 0x0f, 0x2d,
-	0xce, 0xe6, 0x98, 0x70, 0x77, 0x1e, 0xc9, 0xea, 0x94, 0x45, 0x75, 0x9a, 0x6b, 0x6b, 0x5a, 0x1f,
-	0xfa, 0x33, 0x54, 0x44, 0x22, 0x09, 0x19, 0x42, 0x4b, 0x15, 0x7c, 0xfc, 0x74, 0x46, 0x4d, 0x05,
-	0xb9, 0x78, 0xb6, 0xd6, 0xe1, 0xbf, 0x25, 0x30, 0x47, 0x18, 0x9e, 0x9d, 0x92, 0x3e, 0x94, 0xd3,
-	0x9b, 0x4d, 0xda, 0xf2, 0xa2, 0x3d, 0xdc, 0x79, 0xbb, 0xa3, 0x59, 0xd4, 0x57, 0x51, 0x20, 0x5f,
-	0x40, 0x6d, 0x3d, 0xcd, 0xc9, 0xab, 0xdc, 0xbf, 0x89, 0xdd, 0xcb, 0x9a, 0xf5, 0xe8, 0x51, 0x26,
-	0x7a, 0x94, 0x1f, 0x3d, 0xca, 0x89, 0xfe, 0x16, 0x5a, 0x9b, 0x53, 0x91, 0xd8, 0xb9, 0xa3, 0x52,
-	0xf2, 0xbc, 0xf9, 0x9f, 0x31, 0x4a, 0x0b, 0xe4, 0x04, 0xe0, 0x61, 0x2a, 0x91, 0xde, 0xa3, 0x31,
-	0x25, 0x49, 0xde, 0x7d, 0x62, 0x7c, 0xd1, 0x02, 0x39, 0x87, 0x86, 0x3e, 0x39, 0x88, 0x25, 0xa0,
-	0x39, 0x73, 0xc7, 0x7e, 0x9d, 0xe3, 0x59, 0xd3, 0x8c, 0xa0, 0xa1, 0xff, 0xf9, 0x15, 0x4d, 0xce,
-	0xb3, 0x42, 0xd1, 0xe4, 0x3d, 0x13, 0x68, 0xe1, 0x23, 0xe3, 0xd4, 0xfc, 0x29, 0x7d, 0xcb, 0x5c,
-	0x57, 0xc4, 0xd3, 0xe4, 0xe3, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0x25, 0x50, 0x0d, 0x16, 0xe4,
-	0x08, 0x00, 0x00,
+	// 804 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x55, 0xdd, 0x4e, 0xdb, 0x48,
+	0x14, 0x8e, 0x93, 0xd8, 0x9b, 0x1c, 0x27, 0x21, 0xcc, 0xb2, 0xab, 0x6c, 0xd8, 0x5d, 0x85, 0x41,
+	0x68, 0xd9, 0x45, 0x84, 0x55, 0x58, 0x56, 0xa5, 0xdc, 0x21, 0x68, 0xd4, 0x8b, 0x0a, 0x64, 0x5a,
+	0x55, 0xea, 0x4d, 0x6a, 0xe2, 0x83, 0x3b, 0x4d, 0x62, 0xbb, 0xf6, 0x04, 0xc2, 0x13, 0x54, 0x55,
+	0xd5, 0xcb, 0x3e, 0x4d, 0x5f, 0xa7, 0x0f, 0x52, 0xcd, 0x8f, 0x63, 0x27, 0xa2, 0x15, 0x37, 0xdc,
+	0x79, 0xbe, 0xf3, 0x9d, 0x33, 0xdf, 0xf9, 0xf1, 0x19, 0xa8, 0xba, 0x11, 0xeb, 0x46, 0x71, 0xc8,
+	0x43, 0x52, 0x72, 0x23, 0xd6, 0xfe, 0xdf, 0x67, 0xfc, 0xcd, 0xf4, 0xb2, 0x3b, 0x0c, 0x27, 0x7b,
+	0x93, 0x1b, 0xc6, 0x47, 0xe1, 0xcd, 0x9e, 0x1f, 0xee, 0x4a, 0xc6, 0xee, 0xb5, 0x3b, 0x66, 0x9e,
+	0xcb, 0xc3, 0x38, 0xd9, 0x9b, 0x7f, 0x2a, 0x67, 0x7a, 0x0c, 0xf5, 0x0b, 0x1e, 0xa3, 0x3b, 0x71,
+	0xf0, 0xdd, 0x14, 0x13, 0x4e, 0xd6, 0xa1, 0x3a, 0x1c, 0x33, 0x0c, 0xf8, 0x80, 0x79, 0x2d, 0xa3,
+	0x63, 0x6c, 0x57, 0x9d, 0x8a, 0x02, 0x9e, 0x7a, 0x64, 0x0d, 0xcc, 0x18, 0x7d, 0x9c, 0xb5, 0x8a,
+	0xd2, 0xa0, 0x0e, 0xf4, 0x08, 0x1a, 0x69, 0x8c, 0x24, 0x0a, 0x83, 0x04, 0xc9, 0xdf, 0x60, 0x85,
+	0x97, 0x6f, 0x71, 0xc8, 0x65, 0x04, 0xbb, 0xb7, 0xda, 0x15, 0x72, 0xcf, 0x24, 0x74, 0x82, 0xdc,
+	0x65, 0x63, 0x47, 0x13, 0xe8, 0x07, 0x03, 0xe0, 0x02, 0x79, 0x7a, 0xfd, 0x7e, 0xce, 0xb3, 0xb4,
+	0x6d, 0xf7, 0xd6, 0xa5, 0x67, 0x46, 0xd0, 0x41, 0x4e, 0x03, 0x1e, 0xdf, 0xa6, 0x31, 0xda, 0x4f,
+	0xc0, 0xce, 0xc1, 0xa4, 0x09, 0xa5, 0x11, 0xde, 0x6a, 0xf1, 0xe2, 0x93, 0x6c, 0x80, 0x79, 0xed,
+	0x8e, 0xa7, 0x28, 0x75, 0xdb, 0x3d, 0x3b, 0x27, 0xc7, 0x51, 0x96, 0xc7, 0xc5, 0x47, 0x06, 0xad,
+	0x83, 0x2d, 0x6f, 0x52, 0x59, 0xd0, 0x0e, 0x40, 0x3f, 0x53, 0x46, 0xa0, 0x3c, 0xc2, 0xdb, 0x44,
+	0xea, 0xaa, 0x3a, 0xf2, 0x9b, 0x7e, 0x34, 0xc0, 0xee, 0x67, 0x1e, 0xe4, 0xbf, 0x25, 0xf5, 0xbf,
+	0xcb, 0x8b, 0x72, 0x8c, 0x07, 0x95, 0xff, 0x17, 0xac, 0xc8, 0xab, 0x7c, 0x9c, 0xa5, 0xa2, 0xe7,
+	0x0d, 0x33, 0xf2, 0x0d, 0xfb, 0x6c, 0x40, 0x33, 0x63, 0x6a, 0xed, 0x87, 0x4b, 0xda, 0x37, 0x32,
+	0xed, 0x39, 0xda, 0x83, 0x26, 0xb0, 0x25, 0xea, 0x8f, 0xa3, 0x54, 0xfc, 0xaf, 0x60, 0x45, 0x31,
+	0x5e, 0xb1, 0x54, 0xbd, 0x3e, 0xd1, 0x4f, 0x06, 0xd4, 0x14, 0x4f, 0x4b, 0x3f, 0x58, 0x92, 0xfe,
+	0x87, 0x1e, 0x9a, 0x8c, 0xf2, 0xa0, 0xb2, 0x37, 0xa1, 0x7e, 0x82, 0x63, 0xe4, 0xf8, 0xa3, 0x51,
+	0x69, 0x42, 0x23, 0x25, 0xe9, 0xf1, 0xaa, 0x83, 0x7d, 0xce, 0x02, 0x5f, 0x3b, 0xd1, 0x3f, 0xa1,
+	0xa6, 0x8e, 0x3a, 0xa9, 0x06, 0x14, 0xc3, 0x91, 0x54, 0x53, 0x71, 0x8a, 0xe1, 0x88, 0xee, 0x80,
+	0x79, 0x1e, 0xb2, 0x80, 0x0b, 0x9d, 0x63, 0x57, 0xfd, 0x59, 0x86, 0x23, 0x3e, 0x25, 0x12, 0x06,
+	0x52, 0xa5, 0x40, 0xc2, 0x80, 0x7e, 0x29, 0x82, 0xa5, 0x84, 0xde, 0x91, 0x56, 0x07, 0xcc, 0x48,
+	0x44, 0xd2, 0x69, 0x81, 0x4c, 0x4b, 0xc6, 0x76, 0x94, 0x41, 0x54, 0x3e, 0x76, 0x3d, 0x36, 0x4d,
+	0x5a, 0xa5, 0x8e, 0xb1, 0x5d, 0x72, 0xf4, 0x89, 0x1c, 0x40, 0x65, 0x82, 0xdc, 0xf5, 0x5c, 0xee,
+	0xb6, 0xca, 0xb2, 0xd4, 0xbf, 0xe5, 0x6a, 0xd2, 0x7d, 0xa6, 0x6d, 0xaa, 0xcc, 0x73, 0x2a, 0xd9,
+	0x80, 0x1a, 0xce, 0x22, 0x16, 0x63, 0x32, 0x98, 0x06, 0x6c, 0xd6, 0x32, 0x65, 0x50, 0x5b, 0x63,
+	0x2f, 0x02, 0x36, 0x23, 0x3b, 0xb0, 0xea, 0x63, 0x78, 0x85, 0xc1, 0x10, 0x07, 0x3c, 0x66, 0xbe,
+	0x8f, 0x71, 0xd2, 0xb2, 0x64, 0xfd, 0x9a, 0xa9, 0xe1, 0xb9, 0xc6, 0x45, 0xbc, 0x69, 0xe4, 0xb9,
+	0x1c, 0x3d, 0x15, 0xef, 0x27, 0x15, 0x4f, 0x63, 0x22, 0x5e, 0xfb, 0x08, 0xea, 0x0b, 0x6a, 0xee,
+	0x28, 0xc3, 0x5a, 0xbe, 0xbb, 0xd5, 0x7c, 0x43, 0x5f, 0x42, 0x2d, 0xbf, 0xab, 0xc8, 0xe6, 0xd2,
+	0x3a, 0x5b, 0x18, 0x04, 0x6d, 0x22, 0x14, 0x2c, 0xbc, 0xc6, 0x80, 0x27, 0xad, 0xa2, 0xac, 0x8c,
+	0x2a, 0xeb, 0xa9, 0x80, 0x1c, 0x6d, 0xa1, 0xef, 0x0d, 0x30, 0x25, 0x72, 0xbf, 0x90, 0x6d, 0xa8,
+	0x78, 0x2c, 0xe1, 0x6e, 0x30, 0x44, 0xdd, 0xdc, 0xf9, 0x59, 0xb4, 0x88, 0x05, 0x09, 0xf3, 0x50,
+	0xb6, 0xa8, 0xe2, 0xe8, 0x13, 0xd9, 0x82, 0x06, 0x67, 0x13, 0x4c, 0xb8, 0x3b, 0x89, 0x54, 0x75,
+	0xca, 0xb2, 0x3a, 0xf5, 0x39, 0x2a, 0xea, 0x43, 0x5f, 0x83, 0x25, 0x85, 0x24, 0xa4, 0x07, 0x0d,
+	0x5d, 0xf0, 0xc1, 0xf7, 0x15, 0xd5, 0x35, 0xe5, 0xec, 0xde, 0xb9, 0xf6, 0xbe, 0x16, 0xc1, 0xec,
+	0x63, 0x78, 0x72, 0x4c, 0x76, 0xa1, 0x2c, 0x26, 0x9b, 0x34, 0xd5, 0xa0, 0x65, 0x33, 0xdf, 0x5e,
+	0xcd, 0x21, 0xfa, 0xaf, 0x28, 0x90, 0x7f, 0xa0, 0x74, 0x81, 0x9c, 0xac, 0x2c, 0x6d, 0xfe, 0x76,
+	0x33, 0x03, 0xf2, 0xdc, 0xfe, 0x9c, 0xdb, 0x5f, 0xe6, 0xf6, 0x17, 0xb8, 0x87, 0x50, 0x49, 0xb7,
+	0x19, 0x59, 0x5b, 0x5a, 0x6e, 0xca, 0xeb, 0x97, 0x3b, 0x57, 0x1e, 0x2d, 0x88, 0x0c, 0xc4, 0x36,
+	0x21, 0xcd, 0xdc, 0x62, 0xc9, 0x67, 0x90, 0x5f, 0x35, 0xb4, 0x20, 0x1e, 0x31, 0xf5, 0xaf, 0x13,
+	0x22, 0xcd, 0x0b, 0xdb, 0xa1, 0xfd, 0xf3, 0x02, 0x36, 0x77, 0x3a, 0x00, 0x4b, 0xbd, 0xa2, 0xda,
+	0x69, 0xe1, 0x59, 0xd6, 0x4e, 0x8b, 0xcf, 0x2c, 0x2d, 0xfc, 0x6b, 0x1c, 0x9b, 0xaf, 0xc4, 0xfb,
+	0x7f, 0x69, 0xc9, 0xe7, 0x7c, 0xff, 0x5b, 0x00, 0x00, 0x00, 0xff, 0xff, 0x43, 0x8b, 0x9c, 0xd4,
+	0x18, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -944,12 +943,12 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type GeoDBClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
-	SetObject(ctx context.Context, in *SetObjectRequest, opts ...grpc.CallOption) (*SetObjectResponse, error)
-	GetObject(ctx context.Context, in *GetObjectRequest, opts ...grpc.CallOption) (*GetObjectResponse, error)
-	GetObjectRegex(ctx context.Context, in *GetObjectRegexRequest, opts ...grpc.CallOption) (*GetObjectRegexResponse, error)
-	SeekObject(ctx context.Context, in *SeekObjectRequest, opts ...grpc.CallOption) (*SeekObjectResponse, error)
-	DeleteObject(ctx context.Context, in *DeleteObjectRequest, opts ...grpc.CallOption) (*DeleteObjectResponse, error)
-	StreamObject(ctx context.Context, in *StreamObjectRequest, opts ...grpc.CallOption) (GeoDB_StreamObjectClient, error)
+	Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	GetRegex(ctx context.Context, in *GetRegexRequest, opts ...grpc.CallOption) (*GetRegexResponse, error)
+	Seek(ctx context.Context, in *SeekRequest, opts ...grpc.CallOption) (*SeekResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	Stream(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (GeoDB_StreamClient, error)
 }
 
 type geoDBClient struct {
@@ -969,57 +968,57 @@ func (c *geoDBClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.Ca
 	return out, nil
 }
 
-func (c *geoDBClient) SetObject(ctx context.Context, in *SetObjectRequest, opts ...grpc.CallOption) (*SetObjectResponse, error) {
-	out := new(SetObjectResponse)
-	err := c.cc.Invoke(ctx, "/api.GeoDB/SetObject", in, out, opts...)
+func (c *geoDBClient) Set(ctx context.Context, in *SetRequest, opts ...grpc.CallOption) (*SetResponse, error) {
+	out := new(SetResponse)
+	err := c.cc.Invoke(ctx, "/api.GeoDB/Set", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *geoDBClient) GetObject(ctx context.Context, in *GetObjectRequest, opts ...grpc.CallOption) (*GetObjectResponse, error) {
-	out := new(GetObjectResponse)
-	err := c.cc.Invoke(ctx, "/api.GeoDB/GetObject", in, out, opts...)
+func (c *geoDBClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	out := new(GetResponse)
+	err := c.cc.Invoke(ctx, "/api.GeoDB/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *geoDBClient) GetObjectRegex(ctx context.Context, in *GetObjectRegexRequest, opts ...grpc.CallOption) (*GetObjectRegexResponse, error) {
-	out := new(GetObjectRegexResponse)
-	err := c.cc.Invoke(ctx, "/api.GeoDB/GetObjectRegex", in, out, opts...)
+func (c *geoDBClient) GetRegex(ctx context.Context, in *GetRegexRequest, opts ...grpc.CallOption) (*GetRegexResponse, error) {
+	out := new(GetRegexResponse)
+	err := c.cc.Invoke(ctx, "/api.GeoDB/GetRegex", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *geoDBClient) SeekObject(ctx context.Context, in *SeekObjectRequest, opts ...grpc.CallOption) (*SeekObjectResponse, error) {
-	out := new(SeekObjectResponse)
-	err := c.cc.Invoke(ctx, "/api.GeoDB/SeekObject", in, out, opts...)
+func (c *geoDBClient) Seek(ctx context.Context, in *SeekRequest, opts ...grpc.CallOption) (*SeekResponse, error) {
+	out := new(SeekResponse)
+	err := c.cc.Invoke(ctx, "/api.GeoDB/Seek", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *geoDBClient) DeleteObject(ctx context.Context, in *DeleteObjectRequest, opts ...grpc.CallOption) (*DeleteObjectResponse, error) {
-	out := new(DeleteObjectResponse)
-	err := c.cc.Invoke(ctx, "/api.GeoDB/DeleteObject", in, out, opts...)
+func (c *geoDBClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/api.GeoDB/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *geoDBClient) StreamObject(ctx context.Context, in *StreamObjectRequest, opts ...grpc.CallOption) (GeoDB_StreamObjectClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_GeoDB_serviceDesc.Streams[0], "/api.GeoDB/StreamObject", opts...)
+func (c *geoDBClient) Stream(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (GeoDB_StreamClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_GeoDB_serviceDesc.Streams[0], "/api.GeoDB/Stream", opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &geoDBStreamObjectClient{stream}
+	x := &geoDBStreamClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -1029,17 +1028,17 @@ func (c *geoDBClient) StreamObject(ctx context.Context, in *StreamObjectRequest,
 	return x, nil
 }
 
-type GeoDB_StreamObjectClient interface {
-	Recv() (*StreamObjectResponse, error)
+type GeoDB_StreamClient interface {
+	Recv() (*StreamResponse, error)
 	grpc.ClientStream
 }
 
-type geoDBStreamObjectClient struct {
+type geoDBStreamClient struct {
 	grpc.ClientStream
 }
 
-func (x *geoDBStreamObjectClient) Recv() (*StreamObjectResponse, error) {
-	m := new(StreamObjectResponse)
+func (x *geoDBStreamClient) Recv() (*StreamResponse, error) {
+	m := new(StreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -1049,12 +1048,12 @@ func (x *geoDBStreamObjectClient) Recv() (*StreamObjectResponse, error) {
 // GeoDBServer is the server API for GeoDB service.
 type GeoDBServer interface {
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
-	SetObject(context.Context, *SetObjectRequest) (*SetObjectResponse, error)
-	GetObject(context.Context, *GetObjectRequest) (*GetObjectResponse, error)
-	GetObjectRegex(context.Context, *GetObjectRegexRequest) (*GetObjectRegexResponse, error)
-	SeekObject(context.Context, *SeekObjectRequest) (*SeekObjectResponse, error)
-	DeleteObject(context.Context, *DeleteObjectRequest) (*DeleteObjectResponse, error)
-	StreamObject(*StreamObjectRequest, GeoDB_StreamObjectServer) error
+	Set(context.Context, *SetRequest) (*SetResponse, error)
+	Get(context.Context, *GetRequest) (*GetResponse, error)
+	GetRegex(context.Context, *GetRegexRequest) (*GetRegexResponse, error)
+	Seek(context.Context, *SeekRequest) (*SeekResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	Stream(*StreamRequest, GeoDB_StreamServer) error
 }
 
 // UnimplementedGeoDBServer can be embedded to have forward compatible implementations.
@@ -1064,23 +1063,23 @@ type UnimplementedGeoDBServer struct {
 func (*UnimplementedGeoDBServer) Ping(ctx context.Context, req *PingRequest) (*PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (*UnimplementedGeoDBServer) SetObject(ctx context.Context, req *SetObjectRequest) (*SetObjectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SetObject not implemented")
+func (*UnimplementedGeoDBServer) Set(ctx context.Context, req *SetRequest) (*SetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Set not implemented")
 }
-func (*UnimplementedGeoDBServer) GetObject(ctx context.Context, req *GetObjectRequest) (*GetObjectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetObject not implemented")
+func (*UnimplementedGeoDBServer) Get(ctx context.Context, req *GetRequest) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (*UnimplementedGeoDBServer) GetObjectRegex(ctx context.Context, req *GetObjectRegexRequest) (*GetObjectRegexResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetObjectRegex not implemented")
+func (*UnimplementedGeoDBServer) GetRegex(ctx context.Context, req *GetRegexRequest) (*GetRegexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetRegex not implemented")
 }
-func (*UnimplementedGeoDBServer) SeekObject(ctx context.Context, req *SeekObjectRequest) (*SeekObjectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SeekObject not implemented")
+func (*UnimplementedGeoDBServer) Seek(ctx context.Context, req *SeekRequest) (*SeekResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Seek not implemented")
 }
-func (*UnimplementedGeoDBServer) DeleteObject(ctx context.Context, req *DeleteObjectRequest) (*DeleteObjectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteObject not implemented")
+func (*UnimplementedGeoDBServer) Delete(ctx context.Context, req *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (*UnimplementedGeoDBServer) StreamObject(req *StreamObjectRequest, srv GeoDB_StreamObjectServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamObject not implemented")
+func (*UnimplementedGeoDBServer) Stream(req *StreamRequest, srv GeoDB_StreamServer) error {
+	return status.Errorf(codes.Unimplemented, "method Stream not implemented")
 }
 
 func RegisterGeoDBServer(s *grpc.Server, srv GeoDBServer) {
@@ -1105,114 +1104,114 @@ func _GeoDB_Ping_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_SetObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SetObjectRequest)
+func _GeoDB_Set_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoDBServer).SetObject(ctx, in)
+		return srv.(GeoDBServer).Set(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GeoDB/SetObject",
+		FullMethod: "/api.GeoDB/Set",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoDBServer).SetObject(ctx, req.(*SetObjectRequest))
+		return srv.(GeoDBServer).Set(ctx, req.(*SetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_GetObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetObjectRequest)
+func _GeoDB_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoDBServer).GetObject(ctx, in)
+		return srv.(GeoDBServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GeoDB/GetObject",
+		FullMethod: "/api.GeoDB/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoDBServer).GetObject(ctx, req.(*GetObjectRequest))
+		return srv.(GeoDBServer).Get(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_GetObjectRegex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetObjectRegexRequest)
+func _GeoDB_GetRegex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRegexRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoDBServer).GetObjectRegex(ctx, in)
+		return srv.(GeoDBServer).GetRegex(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GeoDB/GetObjectRegex",
+		FullMethod: "/api.GeoDB/GetRegex",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoDBServer).GetObjectRegex(ctx, req.(*GetObjectRegexRequest))
+		return srv.(GeoDBServer).GetRegex(ctx, req.(*GetRegexRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_SeekObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SeekObjectRequest)
+func _GeoDB_Seek_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SeekRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoDBServer).SeekObject(ctx, in)
+		return srv.(GeoDBServer).Seek(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GeoDB/SeekObject",
+		FullMethod: "/api.GeoDB/Seek",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoDBServer).SeekObject(ctx, req.(*SeekObjectRequest))
+		return srv.(GeoDBServer).Seek(ctx, req.(*SeekRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_DeleteObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteObjectRequest)
+func _GeoDB_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GeoDBServer).DeleteObject(ctx, in)
+		return srv.(GeoDBServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.GeoDB/DeleteObject",
+		FullMethod: "/api.GeoDB/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GeoDBServer).DeleteObject(ctx, req.(*DeleteObjectRequest))
+		return srv.(GeoDBServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _GeoDB_StreamObject_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(StreamObjectRequest)
+func _GeoDB_Stream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StreamRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(GeoDBServer).StreamObject(m, &geoDBStreamObjectServer{stream})
+	return srv.(GeoDBServer).Stream(m, &geoDBStreamServer{stream})
 }
 
-type GeoDB_StreamObjectServer interface {
-	Send(*StreamObjectResponse) error
+type GeoDB_StreamServer interface {
+	Send(*StreamResponse) error
 	grpc.ServerStream
 }
 
-type geoDBStreamObjectServer struct {
+type geoDBStreamServer struct {
 	grpc.ServerStream
 }
 
-func (x *geoDBStreamObjectServer) Send(m *StreamObjectResponse) error {
+func (x *geoDBStreamServer) Send(m *StreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -1225,30 +1224,30 @@ var _GeoDB_serviceDesc = grpc.ServiceDesc{
 			Handler:    _GeoDB_Ping_Handler,
 		},
 		{
-			MethodName: "SetObject",
-			Handler:    _GeoDB_SetObject_Handler,
+			MethodName: "Set",
+			Handler:    _GeoDB_Set_Handler,
 		},
 		{
-			MethodName: "GetObject",
-			Handler:    _GeoDB_GetObject_Handler,
+			MethodName: "Get",
+			Handler:    _GeoDB_Get_Handler,
 		},
 		{
-			MethodName: "GetObjectRegex",
-			Handler:    _GeoDB_GetObjectRegex_Handler,
+			MethodName: "GetRegex",
+			Handler:    _GeoDB_GetRegex_Handler,
 		},
 		{
-			MethodName: "SeekObject",
-			Handler:    _GeoDB_SeekObject_Handler,
+			MethodName: "Seek",
+			Handler:    _GeoDB_Seek_Handler,
 		},
 		{
-			MethodName: "DeleteObject",
-			Handler:    _GeoDB_DeleteObject_Handler,
+			MethodName: "Delete",
+			Handler:    _GeoDB_Delete_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamObject",
-			Handler:       _GeoDB_StreamObject_Handler,
+			StreamName:    "Stream",
+			Handler:       _GeoDB_Stream_Handler,
 			ServerStreams: true,
 		},
 	},

@@ -16,10 +16,10 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-func (this *StreamObjectRequest) Validate() error {
+func (this *StreamRequest) Validate() error {
 	return nil
 }
-func (this *StreamObjectResponse) Validate() error {
+func (this *StreamResponse) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
@@ -27,38 +27,38 @@ func (this *StreamObjectResponse) Validate() error {
 	}
 	return nil
 }
-func (this *SetObjectRequest) Validate() error {
+func (this *SetRequest) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *SetObjectResponse) Validate() error {
+func (this *SetResponse) Validate() error {
 	return nil
 }
-func (this *GetObjectRequest) Validate() error {
+func (this *GetRequest) Validate() error {
 	return nil
 }
-func (this *GetObjectResponse) Validate() error {
+func (this *GetResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *GetObjectRegexRequest) Validate() error {
+func (this *GetRegexRequest) Validate() error {
 	return nil
 }
-func (this *GetObjectRegexResponse) Validate() error {
+func (this *GetRegexResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *SeekObjectRequest) Validate() error {
+func (this *SeekRequest) Validate() error {
 	return nil
 }
-func (this *SeekObjectResponse) Validate() error {
+func (this *SeekResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *DeleteObjectRequest) Validate() error {
+func (this *DeleteRequest) Validate() error {
 	return nil
 }
-func (this *DeleteObjectResponse) Validate() error {
+func (this *DeleteResponse) Validate() error {
 	return nil
 }
 func (this *PingRequest) Validate() error {
