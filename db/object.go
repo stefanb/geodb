@@ -111,6 +111,7 @@ func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {
 	objects := map[string]*api.ObjectDetail{}
 	if len(keys) == 0 {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
 			res, err := item.ValueCopy(nil)
@@ -125,7 +126,6 @@ func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {
 				objects[string(item.Key())] = obj
 			}
 		}
-		iter.Close()
 	} else {
 		for _, key := range keys {
 			i, err := txn.Get([]byte(key))
@@ -154,6 +154,7 @@ func GetRegex(db *badger.DB, regex string) (map[string]*api.ObjectDetail, error)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -176,7 +177,6 @@ func GetRegex(db *badger.DB, regex string) (map[string]*api.ObjectDetail, error)
 		}
 
 	}
-	iter.Close()
 	return objects, nil
 }
 
@@ -185,6 +185,7 @@ func GetPrefix(db *badger.DB, prefix string) (map[string]*api.ObjectDetail, erro
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer iter.Close()
 	for iter.Seek([]byte(prefix)); iter.ValidForPrefix([]byte(prefix)); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -200,7 +201,6 @@ func GetPrefix(db *badger.DB, prefix string) (map[string]*api.ObjectDetail, erro
 		}
 		objects[string(item.Key())] = obj
 	}
-	iter.Close()
 	return objects, nil
 }
 
@@ -209,13 +209,13 @@ func Delete(db *badger.DB, keys []string) error {
 	defer txn.Discard()
 	if len(keys) > 0 && keys[0] == "*" {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
 			if err := txn.Delete(item.Key()); err != nil {
 				return status.Errorf(codes.Internal, "failed to delete key: %s %s", string(item.Key()), err.Error())
 			}
 		}
-		iter.Close()
 	} else {
 		for _, key := range keys {
 			if err := txn.Delete([]byte(key)); err != nil {

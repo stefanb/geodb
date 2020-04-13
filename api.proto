@@ -37,10 +37,10 @@ service GeoDB {
 
     //ScanBound -  input: a geolocation boundary, output: returns an array of current object details that are within the boundary
     rpc ScanBound(ScanBoundRequest) returns(ScanBoundResponse){};
-    //ScanRegexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the regex and are within the boundary and
+    //ScanRegexBound -  input: a geolocation boundary, string-array of unique object ids(optional), output: returns an array of current object details that have keys that match the regex and are within the boundary and
     rpc ScanRegexBound(ScanRegexBoundRequest) returns(ScanRegexBoundResponse){};
     //ScanPrefexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the prefix and are within the boundary and
-    rpc ScanPrefexBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
+    rpc ScanPrefixBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
 }
 
 message Point {
@@ -196,6 +196,7 @@ message DeleteResponse {}
 
 message ScanBoundRequest {
     Bound bound =1;
+    repeated string keys =2; //if zero keys present, ScanBound will scan the entire database
 }
 
 message ScanBoundResponse {
