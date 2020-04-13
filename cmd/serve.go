@@ -17,7 +17,7 @@ var serveCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		s.Setup(func(server *server.Server) error {
-			api.RegisterGeoDBServer(s.GetGRPCServer(), services.NewGeoDB(s.GetDB(), s.GetStream()))
+			api.RegisterGeoDBServer(s.GetGRPCServer(), services.NewGeoDB(s.GetDB(), s.GetStream(), s.GetGmaps()))
 			return nil
 		})
 		s.Run()

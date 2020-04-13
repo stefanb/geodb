@@ -13,8 +13,12 @@ type Client struct {
 	googleMapsClient *maps.Client
 }
 
-func NewClient(googleMapsClient *maps.Client) *Client {
-	return &Client{googleMapsClient: googleMapsClient}
+func NewClient(apiKey string) (*Client, error) {
+	client, err := maps.NewClient(maps.WithAPIKey(apiKey))
+	if err != nil {
+		return nil, err
+	}
+	return &Client{googleMapsClient: client}, nil
 }
 
 func (c *Client) Directions(ctx context.Context, origin api.Point, dest api.Point, mode maps.Mode) ([]maps.Route, error) {
@@ -120,7 +124,6 @@ func (c *Client) GetCoordinates(address string) (*api.Point, error) {
 	req := &maps.GeocodingRequest{
 		Address: address,
 	}
-
 	resp, err := c.googleMapsClient.Geocode(context.Background(), req)
 	if err != nil {
 		return &api.Point{}, err

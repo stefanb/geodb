@@ -45,6 +45,12 @@ func (this *SetRequest) Validate() error {
 func (this *SetResponse) Validate() error {
 	return nil
 }
+func (this *GetKeysRequest) Validate() error {
+	return nil
+}
+func (this *GetKeysResponse) Validate() error {
+	return nil
+}
 func (this *GetRequest) Validate() error {
 	return nil
 }

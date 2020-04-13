@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/autom8ter/geodb/auth"
 	"github.com/autom8ter/geodb/config"
+	"github.com/autom8ter/geodb/maps"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -33,6 +34,7 @@ type Server struct {
 	streamHub  *stream.Hub
 	db         *badger.DB
 	hTTPClient *http.Client
+	gmaps      *maps.Client
 	logger     *log.Logger
 }
 
@@ -56,12 +58,18 @@ func (s *Server) GetLogger() *log.Logger {
 	return s.logger
 }
 
+func (s *Server) GetGmaps() *maps.Client {
+	if s.gmaps == nil {
+		return nil
+	}
+	return s.gmaps
+}
+
 func NewServer() (*Server, error) {
 	db, err := badger.Open(badger.DefaultOptions(config.Config.GetString("GEODB_PATH")))
 	if err != nil {
 		return nil, err
 	}
-
 	var promInterceptor = promgrpc.NewInterceptor(promgrpc.InterceptorOpts{})
 	if err := prometheus.DefaultRegisterer.Register(promInterceptor); err != nil {
 		return nil, err
@@ -97,6 +105,14 @@ func NewServer() (*Server, error) {
 
 	s.router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	s.hTTPClient.Timeout = 5 * time.Second
+
+	if config.Config.IsSet("GEODB_GMAPS_KEY") {
+		client, err := maps.NewClient(config.Config.GetString("GEODB_GMAPS_KEY"))
+		if err != nil {
+			return nil, err
+		}
+		s.gmaps = client
+	}
 	return s, nil
 }
 
@@ -113,12 +129,10 @@ func (s *Server) Run() {
 	hMux := mux.Match(cmux.Any())
 
 	fmt.Printf("starting grpc and http server on port %s\n", config.Config.GetString("GEODB_PORT"))
+
 	egp, ctx := errgroup.WithContext(context.Background())
 	egp.Go(func() error {
 		return s.streamHub.StartObjectStream(ctx)
-	})
-	egp.Go(func() error {
-		return s.streamHub.StartEventStream(ctx)
 	})
 	egp.Go(func() error {
 		for {

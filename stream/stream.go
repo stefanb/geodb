@@ -8,21 +8,16 @@ import (
 )
 
 var objectChan = make(chan *api.ObjectDetail)
-var eventChan = make(chan *api.Events)
 
 type Hub struct {
 	objectClients map[string]chan *api.ObjectDetail
 	objMu         *sync.Mutex
-	eventClients  map[string]chan *api.Events
-	eventMu       *sync.Mutex
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		objectClients: map[string]chan *api.ObjectDetail{},
-		eventClients:  map[string]chan *api.Events{},
 		objMu:         &sync.Mutex{},
-		eventMu:       &sync.Mutex{},
 	}
 }
 
@@ -37,28 +32,6 @@ func (h *Hub) StartObjectStream(ctx context.Context) error {
 			for _, channel := range h.objectClients {
 				if channel != nil {
 					channel <- obj
-				}
-			}
-		case <-ctx.Done():
-			break
-		}
-	}
-}
-
-func (h *Hub) StartEventStream(ctx context.Context) error {
-	for {
-		select {
-		case event := <-eventChan:
-			if event == nil {
-				continue
-			}
-			if h.eventClients == nil {
-				h.eventClients = map[string]chan *api.Events{}
-			}
-
-			for _, channel := range h.eventClients {
-				if channel != nil {
-					channel <- event
 				}
 			}
 		case <-ctx.Done():

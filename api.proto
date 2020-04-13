@@ -11,6 +11,7 @@ service GeoDB {
     rpc Get(GetRequest) returns(GetResponse){};
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
     rpc Seek(SeekRequest) returns(SeekResponse){};
+    rpc GetKeys(GetKeysRequest) returns(GetKeysResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
     rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
@@ -40,12 +41,18 @@ message SetRequest {
 
 message SetResponse {}
 
+message GetKeysRequest {}
+
+message GetKeysResponse {
+    repeated string keys =1;
+}
+
 message GetRequest {
     repeated string keys =1;
 }
 
 message GetResponse {
-    map<string, Object> object= 1;
+    map<string, ObjectDetail> object= 1;
 }
 
 message GetRegexRequest {
@@ -53,7 +60,7 @@ message GetRegexRequest {
 }
 
 message GetRegexResponse {
-    map<string, Object> object= 1;
+    map<string, ObjectDetail> object= 1;
 }
 
 message SeekRequest {
@@ -61,7 +68,7 @@ message SeekRequest {
 }
 
 message SeekResponse {
-    map<string, Object> object= 1;
+    map<string, ObjectDetail> object= 1;
 }
 
 message DeleteRequest {

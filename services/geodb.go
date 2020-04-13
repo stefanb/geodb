@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
+	"github.com/autom8ter/geodb/maps"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
@@ -14,14 +15,16 @@ import (
 )
 
 type GeoDB struct {
-	hub *stream.Hub
-	db  *badger.DB
+	hub   *stream.Hub
+	db    *badger.DB
+	gmaps *maps.Client
 }
 
-func NewGeoDB(db *badger.DB, hub *stream.Hub) *GeoDB {
+func NewGeoDB(db *badger.DB, hub *stream.Hub, gmaps *maps.Client) *GeoDB {
 	return &GeoDB{
-		hub: hub,
-		db:  db,
+		hub:   hub,
+		db:    db,
+		gmaps: gmaps,
 	}
 }
 
@@ -69,7 +72,6 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 			}
 		}
 		iter.Close()
-
 		detail := &api.ObjectDetail{
 			Object: val,
 		}
@@ -85,7 +87,6 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 		}); err != nil {
 			log.Error(err.Error())
 		}
-
 		if err := txn.Commit(); err != nil {
 			log.Error(err.Error())
 			continue
@@ -98,7 +99,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetRegexResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
-	objects := map[string]*api.Object{}
+	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
@@ -115,7 +116,7 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 			if err != nil {
 				return nil, err
 			}
-			var obj = &api.Object{}
+			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
 				return nil, err
 			}
@@ -131,7 +132,7 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
-	objects := map[string]*api.Object{}
+	objects := map[string]*api.ObjectDetail{}
 	if len(r.Keys) == 0 {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
 		defer iter.Close()
@@ -141,7 +142,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 			if err != nil {
 				return nil, err
 			}
-			var obj = &api.Object{}
+			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
 				return nil, err
 			}
@@ -160,7 +161,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 			if err != nil {
 				return nil, err
 			}
-			var obj = &api.Object{}
+			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
 				return nil, err
 			}
@@ -175,7 +176,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
-	objects := map[string]*api.Object{}
+	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
 	defer iter.Close()
 	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
@@ -187,7 +188,7 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 		if err != nil {
 			return nil, err
 		}
-		var obj = &api.Object{}
+		var obj = &api.ObjectDetail{}
 		if err := proto.Unmarshal(res, obj); err != nil {
 			return nil, err
 		}
@@ -195,6 +196,24 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 	}
 	return &api.SeekResponse{
 		Object: objects,
+	}, nil
+}
+
+func (p *GeoDB) GetKeys(ctx context.Context, r *api.GetKeysRequest) (*api.GetKeysResponse, error) {
+	txn := p.db.NewTransaction(false)
+	defer txn.Discard()
+	keys := []string{}
+	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	for iter.Rewind(); iter.Valid(); iter.Next() {
+		item := iter.Item()
+		if item.UserMeta() != 1 {
+			continue
+		}
+		keys = append(keys, string(item.Key()))
+	}
+	iter.Close()
+	return &api.GetKeysResponse{
+		Keys: keys,
 	}, nil
 }
 
