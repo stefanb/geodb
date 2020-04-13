@@ -22,7 +22,7 @@ message StreamEventsRequest {
 }
 
 message StreamEventsResponse {
-    Event event =1;
+    Events events =1;
 }
 
 message StreamObjectRequest {
@@ -87,12 +87,17 @@ message Object {
     int64 radius =3;
     map<string, string> metadata =4;
     int64 expires_unix =5;
-    int64 updated_unix =6;
+    string geofence_regex =6;
+    int64 updated_unix =7;
 }
 
 message Event {
+    Object object =1;
+    double distance =2;
+    int64 timestamp_unix =3;
+}
+
+message Events {
     Object trigger_object =1;
-    Object object =2;
-    double distance =3;
-    int64 timestamp_unix =4;
+    repeated Event events =2;
 }

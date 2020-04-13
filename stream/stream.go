@@ -8,19 +8,19 @@ import (
 )
 
 var objectChan = make(chan *api.Object)
-var eventChan = make(chan *api.Event)
+var eventChan = make(chan *api.Events)
 
 type Hub struct {
 	objectClients map[string]chan *api.Object
 	objMu         *sync.Mutex
-	eventClients  map[string]chan *api.Event
+	eventClients  map[string]chan *api.Events
 	eventMu       *sync.Mutex
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		objectClients: map[string]chan *api.Object{},
-		eventClients:  map[string]chan *api.Event{},
+		eventClients:  map[string]chan *api.Events{},
 		objMu:         &sync.Mutex{},
 		eventMu:       &sync.Mutex{},
 	}
@@ -53,7 +53,7 @@ func (h *Hub) StartEventStream(ctx context.Context) error {
 				continue
 			}
 			if h.eventClients == nil {
-				h.eventClients = map[string]chan *api.Event{}
+				h.eventClients = map[string]chan *api.Events{}
 			}
 
 			for _, channel := range h.eventClients {
@@ -111,13 +111,13 @@ func (h *Hub) AddEventStreamClient(clientID string) string {
 	h.eventMu.Lock()
 	defer h.eventMu.Unlock()
 	if h.eventClients == nil {
-		h.eventClients = map[string]chan *api.Event{}
+		h.eventClients = map[string]chan *api.Events{}
 	}
 	if clientID == "" {
 		id, _ := uuid.NewV4()
 		clientID = id.String()
 	}
-	h.eventClients[clientID] = make(chan *api.Event)
+	h.eventClients[clientID] = make(chan *api.Events)
 	return clientID
 }
 
@@ -130,7 +130,7 @@ func (h *Hub) RemoveEventStreamClient(id string) {
 	}
 }
 
-func (h *Hub) GetClientEventStream(id string) chan *api.Event {
+func (h *Hub) GetClientEventStream(id string) chan *api.Events {
 	h.eventMu.Lock()
 	defer h.eventMu.Unlock()
 	if _, ok := h.eventClients[id]; ok {
@@ -139,10 +139,10 @@ func (h *Hub) GetClientEventStream(id string) chan *api.Event {
 	return nil
 }
 
-func (h *Hub) PublishEvent(event *api.Event) {
-	PublishEvent(event)
+func (h *Hub) PublishEvent(events *api.Events) {
+	PublishEvent(events)
 }
 
-func PublishEvent(event *api.Event) {
-	eventChan <- event
+func PublishEvent(events *api.Events) {
+	eventChan <- events
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
 	"github.com/autom8ter/geodb/geofence"
+	"github.com/autom8ter/geodb/meta"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
@@ -24,17 +25,6 @@ func NewGeoDB(db *badger.DB, hub *stream.Hub) *GeoDB {
 	}
 }
 
-type Meta byte
-
-func (m Meta) Byte() byte {
-	return byte(m)
-}
-
-const (
-	ObjectMeta Meta = 1
-	EventMeta  Meta = 2
-)
-
 func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingResponse, error) {
 	return &api.PingResponse{
 		Ok: true,
@@ -53,7 +43,7 @@ func (p *GeoDB) SetObject(ctx context.Context, r *api.SetObjectRequest) (*api.Se
 		e := &badger.Entry{
 			Key:       []byte(key),
 			Value:     bits,
-			UserMeta:  ObjectMeta.Byte(),
+			UserMeta:  meta.ObjectMeta.Byte(),
 			ExpiresAt: uint64(val.ExpiresUnix),
 		}
 		if err := txn.SetEntry(e); err != nil {
@@ -80,7 +70,7 @@ func (p *GeoDB) GetObjectRegex(ctx context.Context, r *api.GetObjectRegexRequest
 	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
-		if item.UserMeta() != ObjectMeta.Byte() {
+		if item.UserMeta() != meta.ObjectMeta.Byte() {
 			continue
 		}
 		match, err := regexp.MatchString(r.Regex, string(item.Key()))
@@ -130,7 +120,7 @@ func (p *GeoDB) GetObject(ctx context.Context, r *api.GetObjectRequest) (*api.Ge
 			if err != nil {
 				return nil, err
 			}
-			if i.UserMeta() != ObjectMeta.Byte() {
+			if i.UserMeta() != meta.ObjectMeta.Byte() {
 				continue
 			}
 			res, err := i.ValueCopy(nil)
@@ -157,7 +147,7 @@ func (p *GeoDB) SeekObject(ctx context.Context, r *api.SeekObjectRequest) (*api.
 	defer iter.Close()
 	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
 		item := iter.Item()
-		if item.UserMeta() != ObjectMeta.Byte() {
+		if item.UserMeta() != meta.ObjectMeta.Byte() {
 			continue
 		}
 		res, err := item.ValueCopy(nil)
@@ -233,14 +223,14 @@ func (p *GeoDB) StreamEvents(r *api.StreamEventsRequest, ss api.GeoDB_StreamEven
 				}
 				if match {
 					if err := ss.Send(&api.StreamEventsResponse{
-						Event: event,
+						Events: event,
 					}); err != nil {
 						log.Error(err.Error())
 					}
 				}
 			} else {
 				if err := ss.Send(&api.StreamEventsResponse{
-					Event: event,
+					Events: event,
 				}); err != nil {
 					log.Error(err.Error())
 				}
