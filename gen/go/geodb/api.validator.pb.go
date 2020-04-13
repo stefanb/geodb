@@ -90,10 +90,29 @@ func (this *Object) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *ObjectDetail) Validate() error {
+func (this *Directions) Validate() error {
+	return nil
+}
+func (this *Address) Validate() error {
+	return nil
+}
+func (this *Event) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
+	if this.Direction != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Direction); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Direction", err)
+		}
+	}
+	return nil
+}
+func (this *Events) Validate() error {
+	if this.TriggerObject != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.TriggerObject); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("TriggerObject", err)
 		}
 	}
 	for _, item := range this.Events {
@@ -105,18 +124,15 @@ func (this *ObjectDetail) Validate() error {
 	}
 	return nil
 }
-func (this *Event) Validate() error {
+func (this *ObjectDetail) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
 		}
 	}
-	return nil
-}
-func (this *Events) Validate() error {
-	if this.TriggerObject != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.TriggerObject); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("TriggerObject", err)
+	if this.Address != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Address); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Address", err)
 		}
 	}
 	for _, item := range this.Events {

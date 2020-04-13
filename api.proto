@@ -12,8 +12,8 @@ service GeoDB {
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
     rpc Seek(SeekRequest) returns(SeekResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
-    rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
+    rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
 }
 
 message StreamRequest {
@@ -91,19 +91,35 @@ message Object {
     int64 updated_unix =7;
 }
 
-message ObjectDetail {
-   Object object =1;
-   repeated Event events =2;
+message Directions  {
+    string html_directions =1;
+    int64 eta =2;
+}
+
+message Address {
+    string state =1;
+    string address =2;
+    string country =3;
+    string zip =4;
+    string county =5;
+    string city =6;
 }
 
 message Event {
     Object object =1;
     double distance =2;
     bool inside =3;
-    int64 timestamp_unix =4;
+    Directions direction =4;
+    int64 timestamp_unix =5;
 }
 
 message Events {
     Object trigger_object =1;
     repeated Event events =2;
+}
+
+message ObjectDetail {
+    Object object =1;
+    Address address = 2;
+    repeated Event events =3;
 }
