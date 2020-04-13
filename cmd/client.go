@@ -98,26 +98,3 @@ var streamCmd = &cobra.Command{
 		}
 	},
 }
-
-var streamEventsCmd = &cobra.Command{
-	Use:   "stream-events",
-	Short: "stream object events",
-	Run: func(cmd *cobra.Command, args []string) {
-		conn, err := grpc.Dial(target, grpc.WithInsecure())
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		client := api.NewGeoDBClient(conn)
-		resp, err := client.StreamEvents(context.Background(), &api.StreamEventsRequest{})
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		for {
-			res, err := resp.Recv()
-			if err != nil {
-				log.Error(err.Error())
-			}
-			fmt.Println(res.String())
-		}
-	},
-}

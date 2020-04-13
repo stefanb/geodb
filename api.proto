@@ -13,15 +13,6 @@ service GeoDB {
     rpc SeekObject(SeekObjectRequest) returns(SeekObjectResponse){};
     rpc DeleteObject(DeleteObjectRequest) returns(DeleteObjectResponse){};
     rpc StreamObject(StreamObjectRequest) returns(stream StreamObjectResponse){};
-    rpc StreamEvents(StreamEventsRequest) returns(stream StreamEventsResponse){};
-}
-
-message StreamEventsRequest {
-    string client_id =1;
-}
-
-message StreamEventsResponse {
-    Events events =1;
 }
 
 message StreamObjectRequest {
@@ -30,7 +21,7 @@ message StreamObjectRequest {
 }
 
 message StreamObjectResponse {
-    Object object =1;
+    ObjectDetail object =1;
 }
 
 message SetObjectRequest {
@@ -88,6 +79,11 @@ message Object {
     int64 expires_unix =5;
     repeated string geofence_triggers =6;
     int64 updated_unix =7;
+}
+
+message ObjectDetail {
+   Object object =1;
+   repeated Event events =2;
 }
 
 message Event {

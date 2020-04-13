@@ -3,12 +3,12 @@ package services
 import (
 	"context"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
-	"github.com/autom8ter/geodb/geofence"
-	"github.com/autom8ter/geodb/meta"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
+	geo "github.com/paulmach/go.geo"
 	log "github.com/sirupsen/logrus"
+	"github.com/thoas/go-funk"
 	"regexp"
 	"time"
 )
@@ -39,25 +39,58 @@ func (p *GeoDB) SetObject(ctx context.Context, r *api.SetObjectRequest) (*api.Se
 		if val.UpdatedUnix == 0 {
 			val.UpdatedUnix = time.Now().Unix()
 		}
-		bits, _ := proto.Marshal(val)
-		e := &badger.Entry{
+		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
+		iter := txn.NewIterator(badger.DefaultIteratorOptions)
+		var events = map[string]*api.Event{}
+		for iter.Rewind(); iter.Valid(); iter.Next() {
+			item := iter.Item()
+			if string(item.Key()) != val.Key && len(val.GeofenceTriggers) > 0 && funk.ContainsString(val.GeofenceTriggers, string(item.Key())) {
+				res, err := item.ValueCopy(nil)
+				if err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				var obj = &api.Object{}
+				if err := proto.Unmarshal(res, obj); err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				if obj.Point == nil {
+					continue
+				}
+				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
+				dist := point1.GeoDistanceFrom(point2, true)
+				events[obj.Key] = &api.Event{
+					Object:        obj,
+					Distance:      dist,
+					Inside:        dist <= float64(val.Radius+obj.Radius),
+					TimestampUnix: val.UpdatedUnix,
+				}
+			}
+		}
+		iter.Close()
+
+		detail := &api.ObjectDetail{
+			Object: val,
+		}
+		for _, event := range events {
+			detail.Events = append(detail.Events, event)
+		}
+		bits, _ := proto.Marshal(detail)
+		if err := txn.SetEntry(&badger.Entry{
 			Key:       []byte(key),
 			Value:     bits,
-			UserMeta:  meta.ObjectMeta.Byte(),
+			UserMeta:  1,
 			ExpiresAt: uint64(val.ExpiresUnix),
-		}
-		if err := txn.SetEntry(e); err != nil {
+		}); err != nil {
 			log.Error(err.Error())
-			continue
 		}
-		p.hub.PublishObject(val)
+
 		if err := txn.Commit(); err != nil {
 			log.Error(err.Error())
 			continue
 		}
-		go func(obj *api.Object) {
-			geofence.Geofence(p.db, obj)
-		}(val)
+		p.hub.PublishObject(detail)
 	}
 	return &api.SetObjectResponse{}, nil
 }
@@ -70,7 +103,7 @@ func (p *GeoDB) GetObjectRegex(ctx context.Context, r *api.GetObjectRegexRequest
 	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
-		if item.UserMeta() != meta.ObjectMeta.Byte() {
+		if item.UserMeta() != 1 {
 			continue
 		}
 		match, err := regexp.MatchString(r.Regex, string(item.Key()))
@@ -120,7 +153,7 @@ func (p *GeoDB) GetObject(ctx context.Context, r *api.GetObjectRequest) (*api.Ge
 			if err != nil {
 				return nil, err
 			}
-			if i.UserMeta() != meta.ObjectMeta.Byte() {
+			if i.UserMeta() != 1 {
 				continue
 			}
 			res, err := i.ValueCopy(nil)
@@ -147,7 +180,7 @@ func (p *GeoDB) SeekObject(ctx context.Context, r *api.SeekObjectRequest) (*api.
 	defer iter.Close()
 	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
 		item := iter.Item()
-		if item.UserMeta() != meta.ObjectMeta.Byte() {
+		if item.UserMeta() != 1 {
 			continue
 		}
 		res, err := item.ValueCopy(nil)
@@ -182,7 +215,7 @@ func (p *GeoDB) StreamObject(r *api.StreamObjectRequest, ss api.GeoDB_StreamObje
 		select {
 		case msg := <-p.hub.GetClientObjectStream(clientID):
 			if r.Regex != "" {
-				match, err := regexp.MatchString(r.Regex, msg.Key)
+				match, err := regexp.MatchString(r.Regex, msg.Object.Key)
 				if err != nil {
 					return err
 				}
@@ -202,26 +235,6 @@ func (p *GeoDB) StreamObject(r *api.StreamObjectRequest, ss api.GeoDB_StreamObje
 			}
 		case <-ss.Context().Done():
 			p.hub.RemoveObjectStreamClient(clientID)
-			break
-		}
-	}
-}
-
-func (p *GeoDB) StreamEvents(r *api.StreamEventsRequest, ss api.GeoDB_StreamEventsServer) error {
-	clientID := p.hub.AddEventStreamClient(r.ClientId)
-	defer p.hub.RemoveEventStreamClient(clientID)
-	for {
-		select {
-		case event := <-p.hub.GetClientEventStream(clientID):
-			if event == nil {
-				continue
-			}
-			if err := ss.Send(&api.StreamEventsResponse{
-				Events: event,
-			}); err != nil {
-				log.Error(err.Error())
-			}
-		case <-ss.Context().Done():
 			break
 		}
 	}
