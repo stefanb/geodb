@@ -21,7 +21,7 @@ func NewClient(apiKey string) (*Client, error) {
 	return &Client{googleMapsClient: client}, nil
 }
 
-func (c *Client) Directions(ctx context.Context, origin api.Point, dest api.Point, mode maps.Mode) ([]maps.Route, error) {
+func (c *Client) Directions(ctx context.Context, origin *api.Point, dest *api.Point, mode maps.Mode) ([]maps.Route, error) {
 	resp, _, err := c.googleMapsClient.Directions(ctx, &maps.DirectionsRequest{
 		Origin:        c.PointString(origin),
 		Destination:   c.PointString(dest),
@@ -98,11 +98,11 @@ func (c *Client) GetTimezone(point api.Point) (string, error) {
 	return timezoneID, nil
 }
 
-func (c *Client) PointString(point api.Point) string {
+func (c *Client) PointString(point *api.Point) string {
 	return fmt.Sprintf("%f, %f", point.Lat, point.Lon)
 }
 
-func (c *Client) TravelDetail(ctx context.Context, here, there api.Point, mode maps.Mode) (string, int, int, error) {
+func (c *Client) TravelDetail(ctx context.Context, here, there *api.Point, mode maps.Mode) (string, int, int, error) {
 	directions, err := c.Directions(ctx, here, there, mode)
 	if err != nil {
 		return "", 0, 0, err

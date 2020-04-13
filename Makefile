@@ -1,4 +1,4 @@
-version := 0.0.8
+version := 0.0.9
 .DEFAULT_GOAL := help
 
 .PHONY: help
@@ -15,7 +15,7 @@ proto: ## regenerate gRPC code
 	@go fmt ./...
 
 run: ## run server
-	@go run main.go serve
+	@go run main.go
 
 version: ## iterate sem-ver
 	bumpversion patch --allow-dirty

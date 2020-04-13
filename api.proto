@@ -94,15 +94,17 @@ message Object {
     string key =1;
     Point point =2;
     int64 radius =3;
-    map<string, string> metadata =4;
-    int64 expires_unix =5;
-    repeated string geofence_triggers =6;
-    int64 updated_unix =7;
+    TravelMode travel_mode =4;
+    map<string, string> metadata =5;
+    int64 expires_unix =6;
+    repeated string trackers =7;
+    int64 updated_unix =8;
 }
 
 message Directions  {
     string html_directions =1;
     int64 eta =2;
+    int64 travel_dist =3;
 }
 
 message Address {
@@ -131,4 +133,11 @@ message ObjectDetail {
     Object object =1;
     Address address = 2;
     repeated Event events =3;
+}
+
+enum TravelMode {
+    Driving = 0;
+    Walking =1;
+    Bicycling =2;
+    Transit =3;
 }

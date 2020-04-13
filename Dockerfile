@@ -6,8 +6,7 @@ RUN apk --update add ca-certificates
 WORKDIR /geodb
 COPY go.mod .
 COPY go.sum .
-
 RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/geodb
-ENTRYPOINT ["/go/bin/geodb", "serve"]
+ENTRYPOINT ["/go/bin/geodb"]

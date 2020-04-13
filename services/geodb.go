@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
+	"github.com/autom8ter/geodb/helpers"
 	"github.com/autom8ter/geodb/maps"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
@@ -46,43 +47,66 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 			val.UpdatedUnix = time.Now().Unix()
 		}
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
-		iter := txn.NewIterator(badger.DefaultIteratorOptions)
 		var events = map[string]*api.Event{}
-		if len(val.GeofenceTriggers) > 0 {
-			for iter.Rewind(); iter.Valid(); iter.Next() {
-				item := iter.Item()
-				if string(item.Key()) != val.Key && funk.ContainsString(val.GeofenceTriggers, string(item.Key())) {
-					res, err := item.ValueCopy(nil)
+		if len(val.Trackers) > 0 {
+			for _, tracker := range val.Trackers {
+				item, err := txn.Get([]byte(tracker))
+				if err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				res, err := item.ValueCopy(nil)
+				if err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				var obj = &api.Object{}
+				if err := proto.Unmarshal(res, obj); err != nil {
+					log.Error(err.Error())
+					continue
+				}
+				if obj.Point == nil {
+					continue
+				}
+				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
+				dist := point1.GeoDistanceFrom(point2, true)
+				event := &api.Event{
+					Object:        obj,
+					Distance:      dist,
+					Inside:        dist <= float64(val.Radius+obj.Radius),
+					TimestampUnix: val.UpdatedUnix,
+				}
+				if p.gmaps != nil {
+					directions, eta, dist, err := p.gmaps.TravelDetail(context.Background(), val.Point, obj.Point, helpers.ToTravelMode(val.TravelMode))
 					if err != nil {
 						log.Error(err.Error())
-						continue
-					}
-					var obj = &api.Object{}
-					if err := proto.Unmarshal(res, obj); err != nil {
-						log.Error(err.Error())
-						continue
-					}
-					if obj.Point == nil {
-						continue
-					}
-					point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
-					dist := point1.GeoDistanceFrom(point2, true)
-					events[obj.Key] = &api.Event{
-						Object:        obj,
-						Distance:      dist,
-						Inside:        dist <= float64(val.Radius+obj.Radius),
-						TimestampUnix: val.UpdatedUnix,
+					} else {
+						event.Direction = &api.Directions{
+							HtmlDirections: directions,
+							Eta:            int64(eta),
+							TravelDist:     int64(dist),
+						}
 					}
 				}
+				events[obj.Key] = event
 			}
 		}
-		iter.Close()
 		detail := &api.ObjectDetail{
 			Object: val,
 		}
-		for _, event := range events {
-			detail.Events = append(detail.Events, event)
+		if p.gmaps != nil {
+			addr, err := p.gmaps.GetAddress(val.Point)
+			if err != nil {
+				log.Error(err.Error())
+			}
+			detail.Address = addr
 		}
+		if len(events) > 0 {
+			for _, event := range events {
+				detail.Events = append(detail.Events, event)
+			}
+		}
+
 		bits, _ := proto.Marshal(detail)
 		if err := txn.SetEntry(&badger.Entry{
 			Key:       []byte(key),
@@ -109,7 +133,6 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -132,6 +155,7 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 		}
 
 	}
+	iter.Close()
 	return &api.GetRegexResponse{
 		Object: objects,
 	}, nil
@@ -143,7 +167,6 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 	objects := map[string]*api.ObjectDetail{}
 	if len(r.Keys) == 0 {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
-		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
 			res, err := item.ValueCopy(nil)
@@ -158,6 +181,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 				objects[string(item.Key())] = obj
 			}
 		}
+		iter.Close()
 	} else {
 		for _, key := range r.Keys {
 			i, err := txn.Get([]byte(key))
@@ -188,7 +212,6 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer iter.Close()
 	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -204,6 +227,7 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 		}
 		objects[string(item.Key())] = obj
 	}
+	iter.Close()
 	return &api.SeekResponse{
 		Object: objects,
 	}, nil
