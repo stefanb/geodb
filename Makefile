@@ -1,4 +1,4 @@
-version := 0.0.2
+version := 0.0.3
 .DEFAULT_GOAL := help
 
 .PHONY: help
@@ -15,7 +15,7 @@ proto: ## regenerate gRPC code
 	@go fmt ./...
 
 run: ## run server
-	@go run main.go
+	@go run main.go serve
 
 version: ## iterate sem-ver
 	bumpversion patch --allow-dirty
@@ -34,7 +34,7 @@ docker-push: ## push docker image
 	docker push colemanword/geodb:$(version)
 
 docker-run: ## run docker image
-	docker run colemanword/geodb:$(version) -d -p 8080:8080
+	docker run -d colemanword/geodb:$(version) -p 8080:8080
 
 test: ## run tests
 	@go test -v
