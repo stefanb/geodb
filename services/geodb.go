@@ -10,6 +10,8 @@ import (
 	geo "github.com/paulmach/go.geo"
 	log "github.com/sirupsen/logrus"
 	"github.com/thoas/go-funk"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"regexp"
 	"time"
 )
@@ -35,6 +37,7 @@ func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingRespon
 }
 
 func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, error) {
+	var objects = map[string]*api.ObjectDetail{}
 	for key, val := range r.Object {
 		txn := p.db.NewTransaction(true)
 		defer txn.Discard()
@@ -45,29 +48,31 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
 		var events = map[string]*api.Event{}
-		for iter.Rewind(); iter.Valid(); iter.Next() {
-			item := iter.Item()
-			if string(item.Key()) != val.Key && len(val.GeofenceTriggers) > 0 && funk.ContainsString(val.GeofenceTriggers, string(item.Key())) {
-				res, err := item.ValueCopy(nil)
-				if err != nil {
-					log.Error(err.Error())
-					continue
-				}
-				var obj = &api.Object{}
-				if err := proto.Unmarshal(res, obj); err != nil {
-					log.Error(err.Error())
-					continue
-				}
-				if obj.Point == nil {
-					continue
-				}
-				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
-				dist := point1.GeoDistanceFrom(point2, true)
-				events[obj.Key] = &api.Event{
-					Object:        obj,
-					Distance:      dist,
-					Inside:        dist <= float64(val.Radius+obj.Radius),
-					TimestampUnix: val.UpdatedUnix,
+		if len(val.GeofenceTriggers) > 0 {
+			for iter.Rewind(); iter.Valid(); iter.Next() {
+				item := iter.Item()
+				if string(item.Key()) != val.Key && funk.ContainsString(val.GeofenceTriggers, string(item.Key())) {
+					res, err := item.ValueCopy(nil)
+					if err != nil {
+						log.Error(err.Error())
+						continue
+					}
+					var obj = &api.Object{}
+					if err := proto.Unmarshal(res, obj); err != nil {
+						log.Error(err.Error())
+						continue
+					}
+					if obj.Point == nil {
+						continue
+					}
+					point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
+					dist := point1.GeoDistanceFrom(point2, true)
+					events[obj.Key] = &api.Event{
+						Object:        obj,
+						Distance:      dist,
+						Inside:        dist <= float64(val.Radius+obj.Radius),
+						TimestampUnix: val.UpdatedUnix,
+					}
 				}
 			}
 		}
@@ -92,8 +97,11 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 			continue
 		}
 		p.hub.PublishObject(detail)
+		objects[detail.Object.Key] = detail
 	}
-	return &api.SetResponse{}, nil
+	return &api.SetResponse{
+		Object: objects,
+	}, nil
 }
 
 func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetRegexResponse, error) {
@@ -109,16 +117,16 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 		}
 		match, err := regexp.MatchString(r.Regex, string(item.Key()))
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.InvalidArgument, "failed to match regex: %s", err.Error())
 		}
 		if match {
 			res, err := item.ValueCopy(nil)
 			if err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
 			}
 			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 			}
 			objects[string(item.Key())] = obj
 		}
@@ -140,30 +148,32 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 			item := iter.Item()
 			res, err := item.ValueCopy(nil)
 			if err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
 			}
-			var obj = &api.ObjectDetail{}
-			if err := proto.Unmarshal(res, obj); err != nil {
-				return nil, err
+			if len(res) > 0 {
+				var obj = &api.ObjectDetail{}
+				if err := proto.Unmarshal(res, obj); err != nil {
+					return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
+				}
+				objects[string(item.Key())] = obj
 			}
-			objects[string(item.Key())] = obj
 		}
 	} else {
 		for _, key := range r.Keys {
 			i, err := txn.Get([]byte(key))
 			if err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.InvalidArgument, "failed to get key: %s", err.Error())
 			}
 			if i.UserMeta() != 1 {
 				continue
 			}
 			res, err := i.ValueCopy(nil)
 			if err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
 			}
 			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
-				return nil, err
+				return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 			}
 			objects[key] = obj
 		}
@@ -186,11 +196,11 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 		}
 		res, err := item.ValueCopy(nil)
 		if err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
 		}
 		var obj = &api.ObjectDetail{}
 		if err := proto.Unmarshal(res, obj); err != nil {
-			return nil, err
+			return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 		}
 		objects[string(item.Key())] = obj
 	}
@@ -220,10 +230,24 @@ func (p *GeoDB) GetKeys(ctx context.Context, r *api.GetKeysRequest) (*api.GetKey
 func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteResponse, error) {
 	txn := p.db.NewTransaction(true)
 	defer txn.Discard()
-	for _, key := range r.Keys {
-		if err := txn.Delete([]byte(key)); err != nil {
-			return nil, err
+	if len(r.Keys) > 0 && r.Keys[0] == "*" {
+		iter := txn.NewIterator(badger.DefaultIteratorOptions)
+		for iter.Rewind(); iter.Valid(); iter.Next() {
+			item := iter.Item()
+			if err := txn.Delete(item.Key()); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to delete key: %s %s", string(item.Key()), err.Error())
+			}
 		}
+		iter.Close()
+	} else {
+		for _, key := range r.Keys {
+			if err := txn.Delete([]byte(key)); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to delete key: %s %s", key, err.Error())
+			}
+		}
+	}
+	if err := txn.Commit(); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete keys %s", err.Error())
 	}
 	return &api.DeleteResponse{}, nil
 }

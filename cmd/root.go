@@ -5,7 +5,7 @@ import (
 )
 
 func init() {
-	rootCmd.AddCommand(serveCmd, setCmd, getCmd, streamCmd)
+	rootCmd.AddCommand(serveCmd, setCmd, getCmd, delCmd, streamCmd)
 }
 
 var rootCmd = &cobra.Command{

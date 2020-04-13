@@ -43,6 +43,7 @@ func (this *SetRequest) Validate() error {
 	return nil
 }
 func (this *SetResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
 func (this *GetKeysRequest) Validate() error {

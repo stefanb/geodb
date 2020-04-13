@@ -12,10 +12,12 @@ import (
 func init() {
 	setCmd.Flags().StringVar(&target, "target", "localhost:8080", "target server url")
 	setCmd.Flags().StringVar(&key, "key", "", "object key")
-	setCmd.Flags().StringSliceVar(&keys, "keys", []string{"*"}, "object keys")
 	setCmd.Flags().Float64Var(&lat, "lat", 0, "latitude")
 	setCmd.Flags().Float64Var(&lon, "lon", 0, "longitude")
 	setCmd.Flags().Int64Var(&radius, "rad", 50, "radius")
+
+	getCmd.Flags().StringSliceVar(&keys, "keys", []string{}, "object keys")
+	delCmd.Flags().StringSliceVar(&keys, "keys", []string{}, "object keys")
 }
 
 var (
@@ -73,6 +75,25 @@ var getCmd = &cobra.Command{
 			log.Fatal(err.Error())
 		}
 		fmt.Println(resp.String())
+	},
+}
+
+var delCmd = &cobra.Command{
+	Use:   "del",
+	Short: "delete an object",
+	Run: func(cmd *cobra.Command, args []string) {
+		conn, err := grpc.Dial(target, grpc.WithInsecure())
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		client := api.NewGeoDBClient(conn)
+		_, err = client.Delete(
+			context.Background(), &api.DeleteRequest{
+				Keys: keys,
+			})
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	},
 }
 

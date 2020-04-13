@@ -39,7 +39,9 @@ message SetRequest {
     map<string, Object> object =1;
 }
 
-message SetResponse {}
+message SetResponse {
+    map<string, ObjectDetail> object= 1;
+}
 
 message GetKeysRequest {}
 
