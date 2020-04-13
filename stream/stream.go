@@ -12,17 +12,17 @@ var eventChan = make(chan *api.Event)
 
 type Hub struct {
 	objectClients map[string]chan *api.Object
-	objMu            *sync.Mutex
+	objMu         *sync.Mutex
 	eventClients  map[string]chan *api.Event
-	eventMu *sync.Mutex
+	eventMu       *sync.Mutex
 }
 
 func NewHub() *Hub {
 	return &Hub{
 		objectClients: map[string]chan *api.Object{},
 		eventClients:  map[string]chan *api.Event{},
-		objMu:            &sync.Mutex{},
-		eventMu:            &sync.Mutex{},
+		objMu:         &sync.Mutex{},
+		eventMu:       &sync.Mutex{},
 	}
 }
 

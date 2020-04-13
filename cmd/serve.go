@@ -9,7 +9,7 @@ import (
 )
 
 var serveCmd = &cobra.Command{
-	Use:                        "serve",
+	Use:   "serve",
 	Short: "serve starts the geodb server",
 	Run: func(cmd *cobra.Command, args []string) {
 		s, err := server.NewServer()

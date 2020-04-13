@@ -9,10 +9,9 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use: "geodb",
+	Use:  "geodb",
 	Long: "geodb is a persistant geospatial database written in Go",
 }
-
 
 func Execute() error {
 	return rootCmd.Execute()

@@ -27,16 +27,10 @@ func (this *StreamEventsResponse) Validate() error {
 	}
 	return nil
 }
-func (this *KeysRequest) Validate() error {
+func (this *StreamObjectRequest) Validate() error {
 	return nil
 }
-func (this *KeysResponse) Validate() error {
-	return nil
-}
-func (this *StreamRequest) Validate() error {
-	return nil
-}
-func (this *StreamResponse) Validate() error {
+func (this *StreamObjectResponse) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
@@ -44,38 +38,38 @@ func (this *StreamResponse) Validate() error {
 	}
 	return nil
 }
-func (this *SetRequest) Validate() error {
+func (this *SetObjectRequest) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *SetResponse) Validate() error {
+func (this *SetObjectResponse) Validate() error {
 	return nil
 }
-func (this *GetRequest) Validate() error {
+func (this *GetObjectRequest) Validate() error {
 	return nil
 }
-func (this *GetResponse) Validate() error {
+func (this *GetObjectResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *GetRegexRequest) Validate() error {
+func (this *GetObjectRegexRequest) Validate() error {
 	return nil
 }
-func (this *GetRegexResponse) Validate() error {
+func (this *GetObjectRegexResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *SeekRequest) Validate() error {
+func (this *SeekObjectRequest) Validate() error {
 	return nil
 }
-func (this *SeekResponse) Validate() error {
+func (this *SeekObjectResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
-func (this *DeleteRequest) Validate() error {
+func (this *DeleteObjectRequest) Validate() error {
 	return nil
 }
-func (this *DeleteResponse) Validate() error {
+func (this *DeleteObjectResponse) Validate() error {
 	return nil
 }
 func (this *PingRequest) Validate() error {

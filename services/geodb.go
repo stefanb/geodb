@@ -41,7 +41,7 @@ func (p *GeoDB) Ping(ctx context.Context, req *api.PingRequest) (*api.PingRespon
 	}, nil
 }
 
-func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, error) {
+func (p *GeoDB) SetObject(ctx context.Context, r *api.SetObjectRequest) (*api.SetObjectResponse, error) {
 	for key, val := range r.Object {
 		txn := p.db.NewTransaction(true)
 		defer txn.Discard()
@@ -69,28 +69,10 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 			geofence.Geofence(p.db, obj)
 		}(val)
 	}
-	return &api.SetResponse{}, nil
+	return &api.SetObjectResponse{}, nil
 }
 
-func (p *GeoDB) Keys(ctx context.Context, r *api.KeysRequest) (*api.KeysResponse, error) {
-	txn := p.db.NewTransaction(false)
-	defer txn.Discard()
-	keys := []string{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer iter.Close()
-	for iter.Rewind(); iter.Valid(); iter.Next() {
-		item := iter.Item()
-		if item.UserMeta() != ObjectMeta.Byte() {
-			continue
-		}
-		keys = append(keys, string(item.Key()))
-	}
-	return &api.KeysResponse{
-		Keys: keys,
-	}, nil
-}
-
-func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetRegexResponse, error) {
+func (p *GeoDB) GetObjectRegex(ctx context.Context, r *api.GetObjectRegexRequest) (*api.GetObjectRegexResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.Object{}
@@ -118,12 +100,12 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 		}
 
 	}
-	return &api.GetRegexResponse{
+	return &api.GetObjectRegexResponse{
 		Object: objects,
 	}, nil
 }
 
-func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, error) {
+func (p *GeoDB) GetObject(ctx context.Context, r *api.GetObjectRequest) (*api.GetObjectResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.Object{}
@@ -162,12 +144,12 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 			objects[key] = obj
 		}
 	}
-	return &api.GetResponse{
+	return &api.GetObjectResponse{
 		Object: objects,
 	}, nil
 }
 
-func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse, error) {
+func (p *GeoDB) SeekObject(ctx context.Context, r *api.SeekObjectRequest) (*api.SeekObjectResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.Object{}
@@ -188,12 +170,12 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 		}
 		objects[string(item.Key())] = obj
 	}
-	return &api.SeekResponse{
+	return &api.SeekObjectResponse{
 		Object: objects,
 	}, nil
 }
 
-func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteResponse, error) {
+func (p *GeoDB) DeleteObject(ctx context.Context, r *api.DeleteObjectRequest) (*api.DeleteObjectResponse, error) {
 	txn := p.db.NewTransaction(true)
 	defer txn.Discard()
 	for _, key := range r.Keys {
@@ -201,10 +183,10 @@ func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteRe
 			return nil, err
 		}
 	}
-	return &api.DeleteResponse{}, nil
+	return &api.DeleteObjectResponse{}, nil
 }
 
-func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
+func (p *GeoDB) StreamObject(r *api.StreamObjectRequest, ss api.GeoDB_StreamObjectServer) error {
 	clientID := p.hub.AddObjectStreamClient(r.ClientId)
 	for {
 		select {
@@ -215,14 +197,14 @@ func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
 					return err
 				}
 				if match {
-					if err := ss.Send(&api.StreamResponse{
+					if err := ss.Send(&api.StreamObjectResponse{
 						Object: msg,
 					}); err != nil {
 						log.Error(err.Error())
 					}
 				}
 			} else {
-				if err := ss.Send(&api.StreamResponse{
+				if err := ss.Send(&api.StreamObjectResponse{
 					Object: msg,
 				}); err != nil {
 					log.Error(err.Error())

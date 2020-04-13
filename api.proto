@@ -7,13 +7,12 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 
 service GeoDB {
     rpc Ping(PingRequest) returns(PingResponse){};
-    rpc Set(SetRequest) returns(SetResponse){};
-    rpc Get(GetRequest) returns(GetResponse){};
-    rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
-    rpc Seek(SeekRequest) returns(SeekResponse){};
-    rpc Keys(KeysRequest) returns(KeysResponse){};
-    rpc Delete(DeleteRequest) returns(DeleteResponse){};
-    rpc Stream(StreamRequest) returns(stream StreamResponse){};
+    rpc SetObject(SetObjectRequest) returns(SetObjectResponse){};
+    rpc GetObject(GetObjectRequest) returns(GetObjectResponse){};
+    rpc GetObjectRegex(GetObjectRegexRequest) returns(GetObjectRegexResponse){};
+    rpc SeekObject(SeekObjectRequest) returns(SeekObjectResponse){};
+    rpc DeleteObject(DeleteObjectRequest) returns(DeleteObjectResponse){};
+    rpc StreamObject(StreamObjectRequest) returns(stream StreamObjectResponse){};
     rpc StreamEvents(StreamEventsRequest) returns(stream StreamEventsResponse){};
 }
 
@@ -26,56 +25,50 @@ message StreamEventsResponse {
     Event event =1;
 }
 
-message KeysRequest {}
-
-message KeysResponse {
-    repeated string keys =1;
-}
-
-message StreamRequest {
+message StreamObjectRequest {
     string client_id =1;
     string regex =2;
 }
 
-message StreamResponse {
+message StreamObjectResponse {
     Object object =1;
 }
 
-message SetRequest {
+message SetObjectRequest {
     map<string, Object> object =1;
 }
 
-message SetResponse {}
+message SetObjectResponse {}
 
-message GetRequest {
+message GetObjectRequest {
     repeated string keys =1;
 }
 
-message GetResponse {
+message GetObjectResponse {
     map<string, Object> object= 1;
 }
 
-message GetRegexRequest {
+message GetObjectRegexRequest {
     string regex =1;
 }
 
-message GetRegexResponse {
+message GetObjectRegexResponse {
     map<string, Object> object= 1;
 }
 
-message SeekRequest {
+message SeekObjectRequest {
     string prefix =1;
 }
 
-message SeekResponse {
+message SeekObjectResponse {
     map<string, Object> object= 1;
 }
 
-message DeleteRequest {
+message DeleteObjectRequest {
     repeated string keys =1;
 }
 
-message DeleteResponse {}
+message DeleteObjectResponse {}
 
 message PingRequest {}
 
