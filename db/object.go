@@ -26,10 +26,10 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 			val.UpdatedUnix = time.Now().Unix()
 		}
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
-		var events = map[string]*api.Tracker{}
-		if len(val.Trackers) > 0 {
-			for _, tracker := range val.Trackers {
-				item, err := txn.Get([]byte(tracker))
+		var events = map[string]*api.TrackerEvents{}
+		if val.GetTracking() != nil && len(val.GetTracking().GetTrackers()) > 0 {
+			for _, tracker := range val.GetTracking().GetTrackers() {
+				item, err := txn.Get([]byte(tracker.GetTargetObjectKey()))
 				if err != nil {
 					log.Error(err.Error())
 					continue
@@ -49,25 +49,26 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 				}
 				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
 				dist := point1.GeoDistanceFrom(point2, true)
-				event := &api.Tracker{
+				tracker := &api.TrackerEvents{
 					Object:        obj,
 					Distance:      dist,
 					Inside:        dist <= float64(val.Radius+obj.Radius),
 					TimestampUnix: val.UpdatedUnix,
 				}
-				if maps != nil {
-					directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, obj.Point, helpers.ToTravelMode(val.TravelMode))
+				if maps != nil && val.Tracking != nil {
+					directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, obj.Point, helpers.ToTravelMode(val.GetTracking().GetTravelMode()))
 					if err != nil {
 						log.Error(err.Error())
 					} else {
-						event.Direction = &api.Directions{
+						tracker.Direction = &api.Directions{
 							HtmlDirections: directions,
 							Eta:            int64(eta),
 							TravelDist:     int64(dist),
 						}
+
 					}
 				}
-				events[obj.Key] = event
+				events[obj.Key] = tracker
 			}
 		}
 		detail := &api.ObjectDetail{
@@ -82,7 +83,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 		}
 		if len(events) > 0 {
 			for _, event := range events {
-				detail.Trackers = append(detail.Trackers, event)
+				detail.Events = append(detail.Events, event)
 			}
 		}
 

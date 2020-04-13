@@ -85,17 +85,19 @@ service GeoDB {
 
     //ScanBound -  input: a geolocation boundary, output: returns an array of current object details that are within the boundary
     rpc ScanBound(ScanBoundRequest) returns(ScanBoundResponse){};
-    //ScanRegexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the regex and are within the boundary and
+    //ScanRegexBound -  input: a geolocation boundary, string-array of unique object ids(optional), output: returns an array of current object details that have keys that match the regex and are within the boundary and
     rpc ScanRegexBound(ScanRegexBoundRequest) returns(ScanRegexBoundResponse){};
     //ScanPrefexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the prefix and are within the boundary and
-    rpc ScanPrefexBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
+    rpc ScanPrefixBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
 }
 
+//A Point is a simple X/Y or Lng/Lat 2d point. [X, Y] or [Lng, Lat]
 message Point {
     double lat =1; //latitude
     double lon =2; //longitude
 }
 
+//A Bound represents an enclosed "box" in the 2D Euclidean or Cartesian plane. 
 message Bound {
     Point corner =1;
     Point opposite_corner =2;
@@ -106,11 +108,25 @@ message Object {
     string key =1; //a unique identifier
     Point point =2; //geolocation lat/lon
     int64 radius =3; //defaults to 100(meters)
-    TravelMode travel_mode =4; //defaults to driving
+    ObjectTracking tracking =4; //ObjectTracking configures object-object geofencing, directions, eta, etc
     map<string, string> metadata =5; //optional metadata associated with the object
     int64 expires_unix =6; //a unix timestamp in the future when the database should clean up the object. empty if no expiration.
     repeated string trackers =7; //an array of foreigm object keys that represent other objects you want to track the distance, eta, directions, etc(see tracker)
     int64 updated_unix =8; //unix timestamp representing last update (optional)
+}
+
+//ObjectTracking configures object-object geofencing, directions, eta, etc
+message ObjectTracking {
+    TravelMode travel_mode =1; //defaults to driving
+    repeated ObjectTracker trackers =2; //an array of foreigm object keys that represent other objects you want to track the distance, eta, directions, etc(see tracker)
+}
+
+//a foreign object to track against another object
+message ObjectTracker {
+    string target_object_key =1;
+    bool track_directions =2;
+    bool track_address =3;
+    bool track_eta =4;
 }
 
 //Directions if using the google maps integration
@@ -244,6 +260,7 @@ message DeleteResponse {}
 
 message ScanBoundRequest {
     Bound bound =1;
+    repeated string keys =2; //if zero keys present, ScanBound will scan the entire database
 }
 
 message ScanBoundResponse {

@@ -16,6 +16,7 @@ func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
 	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		if len(keys) > 0 {

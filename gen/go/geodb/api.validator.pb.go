@@ -39,7 +39,25 @@ func (this *Object) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
 		}
 	}
+	if this.Tracking != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Tracking); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Tracking", err)
+		}
+	}
 	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *ObjectTracking) Validate() error {
+	for _, item := range this.Trackers {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Trackers", err)
+			}
+		}
+	}
+	return nil
+}
+func (this *ObjectTracker) Validate() error {
 	return nil
 }
 func (this *Directions) Validate() error {
@@ -48,7 +66,7 @@ func (this *Directions) Validate() error {
 func (this *Address) Validate() error {
 	return nil
 }
-func (this *Tracker) Validate() error {
+func (this *TrackerEvents) Validate() error {
 	if this.Object != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
@@ -72,10 +90,10 @@ func (this *ObjectDetail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Address", err)
 		}
 	}
-	for _, item := range this.Trackers {
+	for _, item := range this.Events {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Trackers", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("Events", err)
 			}
 		}
 	}
