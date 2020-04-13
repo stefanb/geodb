@@ -15,10 +15,10 @@ service GeoDB {
     rpc Get(GetRequest) returns(GetResponse){};
     //GetRegex - input: a regex string, output: returns an array of current object details with keys that match the regex pattern
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
-    //Seek - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
-    rpc Seek(SeekRequest) returns(SeekResponse){};
-    //SeekKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
-    rpc SeekKeys(SeekKeysRequest) returns(SeekKeysResponse){};
+    //GetPrefix - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
+    rpc GetPrefix(GetPrefixRequest) returns(GetPrefixResponse){};
+    //GetPrefixKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
+    rpc GetPrefixKeys(GetPrefixKeysRequest) returns(GetPrefixKeysResponse){};
     //GetKeys -  input: none, output: returns all keys in database
     rpc GetKeys(GetKeysRequest) returns(GetKeysResponse){};
     //GetRegexKeys -  input: a regex string, output: returns all keys in database that match the regex pattern
@@ -124,11 +124,11 @@ message GetKeysResponse {
     repeated string keys =1;
 }
 
-message SeekKeysRequest {
+message GetPrefixKeysRequest {
     string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
-message SeekKeysResponse {
+message GetPrefixKeysResponse {
     repeated string keys =1;
 }
 
@@ -157,11 +157,11 @@ message GetRegexResponse {
     map<string, ObjectDetail> object= 1;
 }
 
-message SeekRequest {
+message GetPrefixRequest {
     string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
-message SeekResponse {
+message GetPrefixResponse {
     map<string, ObjectDetail> object= 1;
 }
 

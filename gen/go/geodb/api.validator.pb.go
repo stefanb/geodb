@@ -111,15 +111,15 @@ func (this *GetKeysResponse) Validate() error {
 	return nil
 }
 
-var _regex_SeekKeysRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
+var _regex_GetPrefixKeysRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *SeekKeysRequest) Validate() error {
-	if !_regex_SeekKeysRequest_Prefix.MatchString(this.Prefix) {
+func (this *GetPrefixKeysRequest) Validate() error {
+	if !_regex_GetPrefixKeysRequest_Prefix.MatchString(this.Prefix) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Prefix", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Prefix))
 	}
 	return nil
 }
-func (this *SeekKeysResponse) Validate() error {
+func (this *GetPrefixKeysResponse) Validate() error {
 	return nil
 }
 
@@ -155,15 +155,15 @@ func (this *GetRegexResponse) Validate() error {
 	return nil
 }
 
-var _regex_SeekRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
+var _regex_GetPrefixRequest_Prefix = regexp.MustCompile(`^.{1,225}$`)
 
-func (this *SeekRequest) Validate() error {
-	if !_regex_SeekRequest_Prefix.MatchString(this.Prefix) {
+func (this *GetPrefixRequest) Validate() error {
+	if !_regex_GetPrefixRequest_Prefix.MatchString(this.Prefix) {
 		return github_com_mwitkow_go_proto_validators.FieldError("Prefix", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Prefix))
 	}
 	return nil
 }
-func (this *SeekResponse) Validate() error {
+func (this *GetPrefixResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }

@@ -207,7 +207,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 	}, nil
 }
 
-func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse, error) {
+func (p *GeoDB) GetPrefix(ctx context.Context, r *api.GetPrefixRequest) (*api.GetPrefixResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
@@ -228,7 +228,7 @@ func (p *GeoDB) Seek(ctx context.Context, r *api.SeekRequest) (*api.SeekResponse
 		objects[string(item.Key())] = obj
 	}
 	iter.Close()
-	return &api.SeekResponse{
+	return &api.GetPrefixResponse{
 		Object: objects,
 	}, nil
 }
@@ -251,7 +251,7 @@ func (p *GeoDB) GetKeys(ctx context.Context, r *api.GetKeysRequest) (*api.GetKey
 	}, nil
 }
 
-func (p *GeoDB) SeekKeys(ctx context.Context, r *api.SeekKeysRequest) (*api.SeekKeysResponse, error) {
+func (p *GeoDB) GetPrefixKeys(ctx context.Context, r *api.GetPrefixKeysRequest) (*api.GetPrefixKeysResponse, error) {
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	keys := []string{}
@@ -264,7 +264,7 @@ func (p *GeoDB) SeekKeys(ctx context.Context, r *api.SeekKeysRequest) (*api.Seek
 		keys = append(keys, string(item.Key()))
 	}
 	iter.Close()
-	return &api.SeekKeysResponse{
+	return &api.GetPrefixKeysResponse{
 		Keys: keys,
 	}, nil
 }
