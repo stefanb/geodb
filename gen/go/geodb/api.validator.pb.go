@@ -20,6 +20,19 @@ var _ = math.Inf
 func (this *Point) Validate() error {
 	return nil
 }
+func (this *Bound) Validate() error {
+	if this.Corner != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Corner); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Corner", err)
+		}
+	}
+	if this.OppositeCorner != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.OppositeCorner); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("OppositeCorner", err)
+		}
+	}
+	return nil
+}
 func (this *Object) Validate() error {
 	if this.Point != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
@@ -188,6 +201,42 @@ func (this *DeleteRequest) Validate() error {
 	return nil
 }
 func (this *DeleteResponse) Validate() error {
+	return nil
+}
+func (this *ScanBoundRequest) Validate() error {
+	if this.Bound != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Bound); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Bound", err)
+		}
+	}
+	return nil
+}
+func (this *ScanBoundResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *ScanPrefixBoundRequest) Validate() error {
+	if this.Bound != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Bound); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Bound", err)
+		}
+	}
+	return nil
+}
+func (this *ScanPrefixBoundResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
+	return nil
+}
+func (this *ScanRegexBoundRequest) Validate() error {
+	if this.Bound != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Bound); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Bound", err)
+		}
+	}
+	return nil
+}
+func (this *ScanRegexBoundResponse) Validate() error {
+	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
 func (this *PingRequest) Validate() error {

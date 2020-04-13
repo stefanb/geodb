@@ -34,11 +34,23 @@ service GeoDB {
     //StreamPrefix -  input: a clientID(optional) a prefix string,
     //output: a stream of object details for realtime, targetted object geolocation updates that match the prefix pattern
     rpc StreamPrefix(StreamPrefixRequest) returns(stream StreamPrefixResponse){};
+
+    //ScanBound -  input: a geolocation boundary, output: returns an array of current object details that are within the boundary
+    rpc ScanBound(ScanBoundRequest) returns(ScanBoundResponse){};
+    //ScanRegexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the regex and are within the boundary and
+    rpc ScanRegexBound(ScanRegexBoundRequest) returns(ScanRegexBoundResponse){};
+    //ScanPrefexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the prefix and are within the boundary and
+    rpc ScanPrefexBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
 }
 
 message Point {
     double lat =1; //latitude
     double lon =2; //longitude
+}
+
+message Bound {
+    Point corner =1;
+    Point opposite_corner =2;
 }
 
 //An Object represents anything that has a unique identifier, and a geolocation.
@@ -123,11 +135,11 @@ message StreamPrefixResponse {
 }
 
 message SetRequest {
-    map<string, Object> object =1;
+    map<string, Object> objects =1;
 }
 
 message SetResponse {
-    map<string, ObjectDetail> object= 1;
+    map<string, ObjectDetail> objects= 1;
 }
 
 message GetKeysRequest {}
@@ -157,7 +169,7 @@ message GetRequest {
 }
 
 message GetResponse {
-    map<string, ObjectDetail> object= 1;
+    map<string, ObjectDetail> objects= 1;
 }
 
 message GetRegexRequest {
@@ -165,7 +177,7 @@ message GetRegexRequest {
 }
 
 message GetRegexResponse {
-    map<string, ObjectDetail> object= 1;
+    map<string, ObjectDetail> objects= 1;
 }
 
 message GetPrefixRequest {
@@ -173,7 +185,7 @@ message GetPrefixRequest {
 }
 
 message GetPrefixResponse {
-    map<string, ObjectDetail> object= 1;
+    map<string, ObjectDetail> objects= 1;
 }
 
 message DeleteRequest {
@@ -181,6 +193,32 @@ message DeleteRequest {
 }
 
 message DeleteResponse {}
+
+message ScanBoundRequest {
+    Bound bound =1;
+}
+
+message ScanBoundResponse {
+    map<string, ObjectDetail> objects= 1;
+}
+
+message ScanPrefixBoundRequest {
+    Bound bound =1;
+    string prefix =2;
+}
+
+message ScanPrefixBoundResponse {
+    map<string, ObjectDetail> objects= 1;
+}
+
+message ScanRegexBoundRequest {
+    Bound bound =1;
+    string regex =2;
+}
+
+message ScanRegexBoundResponse {
+    map<string, ObjectDetail> objects= 1;
+}
 
 message PingRequest {}
 

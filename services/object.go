@@ -8,7 +8,7 @@ import (
 
 func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, error) {
 	return &api.SetResponse{
-		Object: db.Set(p.db, p.gmaps, p.hub, r.Object),
+		Objects: db.Set(p.db, p.gmaps, p.hub, r.Objects),
 	}, nil
 }
 
@@ -18,7 +18,7 @@ func (p *GeoDB) GetRegex(ctx context.Context, r *api.GetRegexRequest) (*api.GetR
 		return nil, err
 	}
 	return &api.GetRegexResponse{
-		Object: objects,
+		Objects: objects,
 	}, nil
 }
 
@@ -28,7 +28,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 		return nil, err
 	}
 	return &api.GetResponse{
-		Object: objects,
+		Objects: objects,
 	}, nil
 }
 
@@ -38,7 +38,7 @@ func (p *GeoDB) GetPrefix(ctx context.Context, r *api.GetPrefixRequest) (*api.Ge
 		return nil, err
 	}
 	return &api.GetPrefixResponse{
-		Object: objects,
+		Objects: objects,
 	}, nil
 }
 

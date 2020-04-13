@@ -6,16 +6,34 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 
 ## Features
 
-- [x] Real-Time server-client object geolocation streaming
-- [x] Persistent object geolocation
-- [x] Expire object geolocation streaming
-- [x] Track objects in relation to others using object "trackers"
-- [x] Enhance object tracking features using Google Maps Integration(see environmental variables)
-- [x] gRPC protocol
-- [x] Logging
-- [x] Prometheus metrics (/metrics endpoint)
+- [x] Real-Time Server-Client Object Geolocation Streaming
+- [x] Persistent Object Geolocation
+- [x] Geolocation Expiration
+- [x] Geolocation Boundary Scanning
+- [x] Targetted Geofencing- Track objects in relation to others using object "trackers"
+- [x] Google Maps Integration(see environmental variables) - Enhance Object Tracking Features 
+- [x] gRPC Protocol
+- [x] Prometheus Metrics (/metrics endpoint)
 - [x] Configurable(12-factor)
 - [x] Basic Authentication
+- [x] Docker Image
+- [ ] REST Translation Layer
+- [ ] 80% Test Coverage
+- [ ] Docker Compose File
+- [ ] Kubernetes Manifests
+
+## Methodology
+
+- Clients may query the database in three ways keys(unique ids), prefix-scanning, or regex 
+- Clients can open and execute logic on object geolocation streams that can be filtered by keys(unique ids), prefix-scanning, or regex
+- Clients can manage object-centric, dynamic geofences(trackers) that can be used to track an objects location in relation to other registered objects
+- Haversine formula is used to calculate whether objects are overlapping using object coordinates and their radius.
+- If the server has a google maps api key present in its environmental variables, all geofencing(trackers) will be enhanced with html directions, estimated time of arrival, and more.
+
+## Use Cases
+- Ride Sharing
+- Food Delivery
+- Asset Tracking
 
 ## Environmental Variables
 
@@ -45,27 +63,30 @@ service GeoDB {
     rpc Get(GetRequest) returns(GetResponse){};
     //GetRegex - input: a regex string, output: returns an array of current object details with keys that match the regex pattern
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
-    //Seek - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
-    rpc Seek(SeekRequest) returns(SeekResponse){};
-    //SeekKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
-    rpc SeekKeys(SeekKeysRequest) returns(SeekKeysResponse){};
+    //GetPrefix - input: a prefix string, output: returns an array of current object details with keys that have the given prefix
+    rpc GetPrefix(GetPrefixRequest) returns(GetPrefixResponse){};
     //GetKeys -  input: none, output: returns all keys in database
     rpc GetKeys(GetKeysRequest) returns(GetKeysResponse){};
     //GetRegexKeys -  input: a regex string, output: returns all keys in database that match the regex pattern
     rpc GetRegexKeys(GetRegexKeysRequest) returns(GetRegexKeysResponse){};
+    //GetPrefixKeys - input: a prefix string, output: returns an array of of keys that have the given prefix
+    rpc GetPrefixKeys(GetPrefixKeysRequest) returns(GetPrefixKeysResponse){};
     //Delete -  input: an array of object key strings to delete, output: none
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
     //Stream -  input: a clientID(optional) and an array of object keys(optional),
     //output: a stream of object details for realtime, targetted object geolocation updates
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
-    //StreamRegex -  input: a clientID(optional) a regex string(optional),
+    //StreamRegex -  input: a clientID(optional) a regex string,
     //output: a stream of object details for realtime, targetted object geolocation updates that match the regex pattern
     rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
+    //StreamPrefix -  input: a clientID(optional) a prefix string,
+    //output: a stream of object details for realtime, targetted object geolocation updates that match the prefix pattern
+    rpc StreamPrefix(StreamPrefixRequest) returns(stream StreamPrefixResponse){};
 }
 
 message Point {
-    double lat =1;
-    double lon =2;
+    double lat =1; //latitude
+    double lon =2; //longitude
 }
 
 //An Object represents anything that has a unique identifier, and a geolocation.
@@ -140,6 +161,15 @@ message StreamRegexResponse {
     ObjectDetail object =1;
 }
 
+message StreamPrefixRequest {
+    string client_id =1;
+    string prefix =2 [(validator.field) = {regex: "^.{1,225}$"}];
+}
+
+message StreamPrefixResponse {
+    ObjectDetail object =1;
+}
+
 message SetRequest {
     map<string, Object> object =1;
 }
@@ -154,14 +184,13 @@ message GetKeysResponse {
     repeated string keys =1;
 }
 
-message SeekKeysRequest {
+message GetPrefixKeysRequest {
     string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
-message SeekKeysResponse {
+message GetPrefixKeysResponse {
     repeated string keys =1;
 }
-
 
 message GetRegexKeysRequest {
     string regex =1 [(validator.field) = {regex: "^.{1,225}$"}];
@@ -187,11 +216,11 @@ message GetRegexResponse {
     map<string, ObjectDetail> object= 1;
 }
 
-message SeekRequest {
+message GetPrefixRequest {
     string prefix =1 [(validator.field) = {regex: "^.{1,225}$"}];
 }
 
-message SeekResponse {
+message GetPrefixResponse {
     map<string, ObjectDetail> object= 1;
 }
 
