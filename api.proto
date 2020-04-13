@@ -12,15 +12,25 @@ service GeoDB {
     rpc GetRegex(GetRegexRequest) returns(GetRegexResponse){};
     rpc Seek(SeekRequest) returns(SeekResponse){};
     rpc Delete(DeleteRequest) returns(DeleteResponse){};
+    rpc StreamRegex(StreamRegexRequest) returns(stream StreamRegexResponse){};
     rpc Stream(StreamRequest) returns(stream StreamResponse){};
 }
 
 message StreamRequest {
     string client_id =1;
-    string regex =2;
+    repeated string keys =2;
 }
 
 message StreamResponse {
+    ObjectDetail object =1;
+}
+
+message StreamRegexRequest {
+    string client_id =1;
+    string regex =2;
+}
+
+message StreamRegexResponse {
     ObjectDetail object =1;
 }
 

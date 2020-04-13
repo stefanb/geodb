@@ -132,7 +132,7 @@ func (p *GeoDB) Get(ctx context.Context, r *api.GetRequest) (*api.GetResponse, e
 	txn := p.db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.Object{}
-	if len(r.Keys) > 0 && r.Keys[0] == "*" {
+	if len(r.Keys) == 0 {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
 		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
@@ -209,7 +209,7 @@ func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteRe
 	return &api.DeleteResponse{}, nil
 }
 
-func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
+func (p *GeoDB) StreamRegex(r *api.StreamRegexRequest, ss api.GeoDB_StreamRegexServer) error {
 	clientID := p.hub.AddObjectStreamClient(r.ClientId)
 	for {
 		select {
@@ -220,6 +220,33 @@ func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
 					return err
 				}
 				if match {
+					if err := ss.Send(&api.StreamRegexResponse{
+						Object: msg,
+					}); err != nil {
+						log.Error(err.Error())
+					}
+				}
+			} else {
+				if err := ss.Send(&api.StreamRegexResponse{
+					Object: msg,
+				}); err != nil {
+					log.Error(err.Error())
+				}
+			}
+		case <-ss.Context().Done():
+			p.hub.RemoveObjectStreamClient(clientID)
+			break
+		}
+	}
+}
+
+func (p *GeoDB) Stream(r *api.StreamRequest, ss api.GeoDB_StreamServer) error {
+	clientID := p.hub.AddObjectStreamClient(r.ClientId)
+	for {
+		select {
+		case msg := <-p.hub.GetClientObjectStream(clientID):
+			if len(r.Keys) > 0 {
+				if funk.ContainsString(r.Keys, msg.Object.Key) {
 					if err := ss.Send(&api.StreamResponse{
 						Object: msg,
 					}); err != nil {

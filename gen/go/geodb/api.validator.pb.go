@@ -27,6 +27,17 @@ func (this *StreamResponse) Validate() error {
 	}
 	return nil
 }
+func (this *StreamRegexRequest) Validate() error {
+	return nil
+}
+func (this *StreamRegexResponse) Validate() error {
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
+	return nil
+}
 func (this *SetRequest) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
