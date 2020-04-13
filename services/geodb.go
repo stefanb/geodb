@@ -251,6 +251,48 @@ func (p *GeoDB) GetKeys(ctx context.Context, r *api.GetKeysRequest) (*api.GetKey
 	}, nil
 }
 
+func (p *GeoDB) SeekKeys(ctx context.Context, r *api.SeekKeysRequest) (*api.SeekKeysResponse, error) {
+	txn := p.db.NewTransaction(false)
+	defer txn.Discard()
+	keys := []string{}
+	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	for iter.Seek([]byte(r.Prefix)); iter.ValidForPrefix([]byte(r.Prefix)); iter.Next() {
+		item := iter.Item()
+		if item.UserMeta() != 1 {
+			continue
+		}
+		keys = append(keys, string(item.Key()))
+	}
+	iter.Close()
+	return &api.SeekKeysResponse{
+		Keys: keys,
+	}, nil
+}
+
+func (p *GeoDB) GetRegexKeys(ctx context.Context, r *api.GetRegexKeysRequest) (*api.GetRegexKeysResponse, error) {
+	txn := p.db.NewTransaction(false)
+	defer txn.Discard()
+	keys := []string{}
+	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	for iter.Rewind(); iter.Valid(); iter.Next() {
+		item := iter.Item()
+		if item.UserMeta() != 1 {
+			continue
+		}
+		match, err := regexp.MatchString(string(r.Regex), string(item.Key()))
+		if err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		if match {
+			keys = append(keys, string(item.Key()))
+		}
+	}
+	iter.Close()
+	return &api.GetRegexKeysResponse{
+		Keys: keys,
+	}, nil
+}
+
 func (p *GeoDB) Delete(ctx context.Context, r *api.DeleteRequest) (*api.DeleteResponse, error) {
 	txn := p.db.NewTransaction(true)
 	defer txn.Discard()

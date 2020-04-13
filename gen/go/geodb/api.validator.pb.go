@@ -52,6 +52,18 @@ func (this *GetKeysRequest) Validate() error {
 func (this *GetKeysResponse) Validate() error {
 	return nil
 }
+func (this *SeekKeysRequest) Validate() error {
+	return nil
+}
+func (this *SeekKeysResponse) Validate() error {
+	return nil
+}
+func (this *GetRegexKeysRequest) Validate() error {
+	return nil
+}
+func (this *GetRegexKeysResponse) Validate() error {
+	return nil
+}
 func (this *GetRequest) Validate() error {
 	return nil
 }
