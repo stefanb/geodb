@@ -16,12 +16,6 @@ service GeoDB {
     rpc StreamEvents(StreamEventsRequest) returns(stream StreamEventsResponse){};
 }
 
-enum EventType {
-    Enter =0;
-    Inside =2;
-    Exit =3;
-}
-
 message StreamEventsRequest {
     string client_id =1;
 }
@@ -99,7 +93,7 @@ message Object {
 message Event {
     Object object =1;
     double distance =2;
-    EventType type =3;
+    bool inside =3;
     int64 timestamp_unix =4;
 }
 

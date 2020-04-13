@@ -42,12 +42,11 @@ func Geofence(db *badger.DB, trigger *api.Object) {
 			}
 			point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
 			dist := point1.GeoDistanceFrom(point2, true)
-			if dist <= float64(trigger.Radius+obj.Radius) {
-				events[obj.Key] = &api.Event{
-					Object:        obj,
-					Distance:      dist,
-					TimestampUnix: trigger.UpdatedUnix,
-				}
+			events[obj.Key] = &api.Event{
+				Object:               obj,
+				Distance:             dist,
+				Inside:               dist <= float64(trigger.Radius+obj.Radius),
+				TimestampUnix:        trigger.UpdatedUnix,
 			}
 		}
 	}
