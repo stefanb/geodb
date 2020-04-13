@@ -16,6 +16,12 @@ service GeoDB {
     rpc StreamEvents(StreamEventsRequest) returns(stream StreamEventsResponse){};
 }
 
+enum EventType {
+    Enter =0;
+    Inside =2;
+    Exit =3;
+}
+
 message StreamEventsRequest {
     string client_id =1;
 }
@@ -86,14 +92,15 @@ message Object {
     int64 radius =3;
     map<string, string> metadata =4;
     int64 expires_unix =5;
-    string geofence_regex =6;
+    repeated string geofence_triggers =6;
     int64 updated_unix =7;
 }
 
 message Event {
     Object object =1;
     double distance =2;
-    int64 timestamp_unix =3;
+    EventType type =3;
+    int64 timestamp_unix =4;
 }
 
 message Events {

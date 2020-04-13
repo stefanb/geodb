@@ -23,6 +23,7 @@ require (
 	github.com/soheilhy/cmux v0.1.4
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.3
+	github.com/thoas/go-funk v0.6.0
 	github.com/valyala/fasttemplate v1.1.0 // indirect
 	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073 // indirect
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
