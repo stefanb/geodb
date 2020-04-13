@@ -216,24 +216,10 @@ func (p *GeoDB) StreamEvents(r *api.StreamEventsRequest, ss api.GeoDB_StreamEven
 			if event == nil {
 				continue
 			}
-			if r.Regex != "" {
-				match, err := regexp.MatchString(r.Regex, event.TriggerObject.Key)
-				if err != nil {
-					return err
-				}
-				if match {
-					if err := ss.Send(&api.StreamEventsResponse{
-						Events: event,
-					}); err != nil {
-						log.Error(err.Error())
-					}
-				}
-			} else {
-				if err := ss.Send(&api.StreamEventsResponse{
-					Events: event,
-				}); err != nil {
-					log.Error(err.Error())
-				}
+			if err := ss.Send(&api.StreamEventsResponse{
+				Events: event,
+			}); err != nil {
+				log.Error(err.Error())
 			}
 		case <-ss.Context().Done():
 			break
