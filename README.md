@@ -97,7 +97,7 @@ message Point {
     double lon =2; //longitude
 }
 
-//A Bound represents an enclosed "box" in the 2D Euclidean or Cartesian plane. 
+//A Bound represents an enclosed "box" in the 2D Euclidean or Cartesian plane.
 message Bound {
     Point corner =1;
     Point opposite_corner =2;
@@ -111,7 +111,6 @@ message Object {
     ObjectTracking tracking =4; //ObjectTracking configures object-object geofencing, directions, eta, etc
     map<string, string> metadata =5; //optional metadata associated with the object
     int64 expires_unix =6; //a unix timestamp in the future when the database should clean up the object. empty if no expiration.
-    repeated string trackers =7; //an array of foreigm object keys that represent other objects you want to track the distance, eta, directions, etc(see tracker)
     int64 updated_unix =8; //unix timestamp representing last update (optional)
 }
 
@@ -148,7 +147,7 @@ message Address {
 
 //Tracker is data associated with the object tracking mechanism- it tracks one obects relation to another.
 //An object can have many trackers representing a one-many relationship
-message Tracker {
+message TrackerEvents {
     Object object =1; //targe object
     double distance =2; //distance to object
     bool inside =3; //whether objects are overlapping
@@ -160,7 +159,7 @@ message Tracker {
 message ObjectDetail {
     Object object =1;
     Address address = 2;
-    repeated Tracker trackers =3;
+    repeated TrackerEvents events =3;
 }
 
 //TravelMode is used to generate directions based on the type of travel the object is utilizing. only necessary if using google maps

@@ -14,6 +14,15 @@ proto: ## regenerate gRPC code
 	@prototool generate
 	@go fmt ./...
 
+.PHONY: up
+up: ## start docker containers
+	@docker-compose -f docker-compose.yml pull
+	@docker-compose -f docker-compose.yml up -d
+
+.PHONY: down
+down: ## shuts down docker containers
+	docker-compose -f docker-compose.yml down --remove-orphans
+
 run: ## run server
 	@go run main.go
 
