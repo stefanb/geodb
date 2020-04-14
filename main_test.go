@@ -27,8 +27,8 @@ var (
 		Lon: -104.95344543457031,
 	}
 	saintJosephHospital = &api.Point{
-		Lat:                  39.74626922607422,
-		Lon:                  -104.97151184082031,
+		Lat: 39.74626922607422,
+		Lon: -104.97151184082031,
 	}
 )
 
@@ -169,7 +169,6 @@ func TestGetPrefix(t *testing.T) {
 	}
 }
 
-
 func TestGetRegexs(t *testing.T) {
 	resp, err := geoDB.GetRegex(context.Background(), &api.GetRegexRequest{
 		Regex: "malls_*",
@@ -227,11 +226,11 @@ func TestGetRegexKeys(t *testing.T) {
 
 func TestScanBounds(t *testing.T) {
 	resp, err := geoDB.ScanBound(context.Background(), &api.ScanBoundRequest{
-		Bound:                &api.Bound{
-			Corner:               coorsField,
-			OppositeCorner:       saintJosephHospital,
+		Bound: &api.Bound{
+			Corner:         coorsField,
+			OppositeCorner: saintJosephHospital,
 		},
-		Keys:                 nil,
+		Keys: nil,
 	})
 	if err != nil {
 		t.Fatal(err.Error())

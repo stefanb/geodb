@@ -41,6 +41,8 @@ docker-build: ## build docker image
 
 docker-push: ## push docker image
 	docker push colemanword/geodb:$(version)
+	docker tag colemanword/geodb:$(version) colemanword/geodb:latest
+	docker push colemanword/geodb:latest
 
 docker-run: ## run docker image
 	docker run -d colemanword/geodb:$(version) -p 8080:8080
