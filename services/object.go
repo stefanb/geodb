@@ -4,11 +4,20 @@ import (
 	"context"
 	"github.com/autom8ter/geodb/db"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, error) {
+	if err := r.Validate(); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	objects, err := db.Set(p.db, p.gmaps, p.hub, r.Objects)
+	if err != nil {
+		return nil, err
+	}
 	return &api.SetResponse{
-		Objects: db.Set(p.db, p.gmaps, p.hub, r.Objects),
+		Objects: objects,
 	}, nil
 }
 

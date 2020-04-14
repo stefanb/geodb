@@ -15,6 +15,7 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - [x] Google Maps Integration(see environmental variables) - Enhance Object Tracking Features 
 - [x] gRPC Protocol
 - [x] Prometheus Metrics (/metrics endpoint)
+- [x] Object Geolocation timeseries exposed with Prometheus metrics
 - [x] Configurable(12-factor)
 - [x] Basic Authentication
 - [x] Docker Image

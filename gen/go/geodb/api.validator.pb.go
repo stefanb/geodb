@@ -33,7 +33,16 @@ func (this *Bound) Validate() error {
 	}
 	return nil
 }
+
+var _regex_Object_Key = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *Object) Validate() error {
+	if !_regex_Object_Key.MatchString(this.Key) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Key", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.Key))
+	}
+	if nil == this.Point {
+		return github_com_mwitkow_go_proto_validators.FieldError("Point", fmt.Errorf("message must exist"))
+	}
 	if this.Point != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
@@ -57,7 +66,13 @@ func (this *ObjectTracking) Validate() error {
 	}
 	return nil
 }
+
+var _regex_ObjectTracker_TargetObjectKey = regexp.MustCompile(`^.{1,225}$`)
+
 func (this *ObjectTracker) Validate() error {
+	if !_regex_ObjectTracker_TargetObjectKey.MatchString(this.TargetObjectKey) {
+		return github_com_mwitkow_go_proto_validators.FieldError("TargetObjectKey", fmt.Errorf(`value '%v' must be a string conforming to regex "^.{1,225}$"`, this.TargetObjectKey))
+	}
 	return nil
 }
 func (this *Directions) Validate() error {

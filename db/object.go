@@ -5,6 +5,7 @@ import (
 	api "github.com/autom8ter/geodb/gen/go/geodb"
 	"github.com/autom8ter/geodb/helpers"
 	"github.com/autom8ter/geodb/maps"
+	"github.com/autom8ter/geodb/metrics"
 	"github.com/autom8ter/geodb/stream"
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
@@ -16,16 +17,19 @@ import (
 	"time"
 )
 
-func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api.Object) map[string]*api.ObjectDetail {
+func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api.Object) (map[string]*api.ObjectDetail, error) {
 	var objects = map[string]*api.ObjectDetail{}
 	for key, val := range objs {
+		if err := val.Validate(); err != nil {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
 		txn := db.NewTransaction(true)
 		defer txn.Discard()
 		val.Key = key
 		if val.UpdatedUnix == 0 {
 			val.UpdatedUnix = time.Now().Unix()
 		}
-
+		metrics.GaugeObjectLocation(key, val.Point)
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
 		var events = map[string]*api.TrackerEvent{}
 		if val.GetTracking() != nil && len(val.GetTracking().GetTrackers()) > 0 {
@@ -108,7 +112,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 		hub.PublishObject(detail)
 		objects[detail.Object.Key] = detail
 	}
-	return objects
+	return objects, nil
 }
 
 func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {

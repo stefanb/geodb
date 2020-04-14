@@ -57,8 +57,8 @@ message Bound {
 
 //An Object represents anything that has a unique identifier, and a geolocation.
 message Object {
-    string key =1; //a unique identifier
-    Point point =2; //geolocation lat/lon
+    string key = 1 [(validator.field) = {regex: "^.{1,225}$"}]; //a unique identifier
+    Point point =2 [(validator.field) = {msg_exists : true}]; //geolocation lat/lon
     int64 radius =3; //defaults to 100(meters)
     ObjectTracking tracking =4; //ObjectTracking configures object-object geofencing, directions, eta, etc
     map<string, string> metadata =5; //optional metadata associated with the object
@@ -75,7 +75,7 @@ message ObjectTracking {
 
 //a foreign object to track against another object
 message ObjectTracker {
-    string target_object_key =1;
+    string target_object_key =1 [(validator.field) = {regex: "^.{1,225}$"}];
     bool track_directions =2;
     bool track_distance =3;
     bool track_eta =4;
