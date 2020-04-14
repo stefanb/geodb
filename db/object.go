@@ -69,7 +69,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs []*api.Object) 
 							trackerEvent.Direction.Eta = int64(eta)
 						}
 						if tracker.TrackDistance {
-							trackerEvent.Direction.Eta = int64(dist)
+							trackerEvent.Direction.TravelDist = int64(dist)
 						}
 					}
 				}
