@@ -90,6 +90,13 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 			}
 			detail.Address = addr
 		}
+		if maps != nil && val.GetTimezone {
+			zone, err := maps.GetTimezone(val.Point)
+			if err != nil {
+				log.Error(err.Error())
+			}
+			detail.Timezone = zone
+		}
 		if len(events) > 0 {
 			for _, event := range events {
 				detail.Events = append(detail.Events, event)

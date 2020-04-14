@@ -272,6 +272,17 @@ func (this *ScanRegexBoundResponse) Validate() error {
 	// Validation of proto3 map<> fields is unsupported.
 	return nil
 }
+func (this *GetPointRequest) Validate() error {
+	return nil
+}
+func (this *GetPointResponse) Validate() error {
+	if this.Point != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Point); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
+		}
+	}
+	return nil
+}
 func (this *PingRequest) Validate() error {
 	return nil
 }

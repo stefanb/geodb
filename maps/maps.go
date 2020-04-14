@@ -77,25 +77,20 @@ func (c *Client) GetAddress(point *api.Point) (*api.Address, error) {
 	return address, nil
 }
 
-func (c *Client) GetTimezone(point api.Point) (string, error) {
-	timezoneID := "America/Chicago"
+func (c *Client) GetTimezone(point *api.Point) (string, error) {
 	location := &maps.LatLng{
 		Lat: point.Lat,
 		Lng: point.Lon,
 	}
-
 	r := &maps.TimezoneRequest{
 		Location:  location,
 		Timestamp: time.Now(),
 	}
 	timezoneResult, err := c.googleMapsClient.Timezone(context.Background(), r)
 	if err != nil {
-		return timezoneID, err
+		return "", err
 	}
-
-	timezoneID = timezoneResult.TimeZoneID
-
-	return timezoneID, nil
+	return timezoneResult.TimeZoneID, nil
 }
 
 func (c *Client) PointString(point *api.Point) string {
