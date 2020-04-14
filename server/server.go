@@ -65,7 +65,7 @@ func (s *Server) GetGmaps() *maps.Client {
 	return s.gmaps
 }
 
-func GetDeps() (*badger.DB, *stream.Hub, *maps.Client, error){
+func GetDeps() (*badger.DB, *stream.Hub, *maps.Client, error) {
 	db, err := badger.Open(badger.DefaultOptions(config.Config.GetString("GEODB_PATH")))
 	if err != nil {
 		return nil, nil, nil, err
@@ -114,7 +114,7 @@ func NewServer() (*Server, error) {
 		hTTPClient: http.DefaultClient,
 		logger:     log.New(),
 		streamHub:  hub,
-		gmaps: gmaps,
+		gmaps:      gmaps,
 	}
 	s.router.Use(
 		middleware.Recover(),

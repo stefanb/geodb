@@ -14,9 +14,8 @@ func (p *GeoDB) GetPoint(ctx context.Context, r *api.GetPointRequest) (*api.GetP
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		return &api.GetPointResponse{
-			Point:                point,
+			Point: point,
 		}, nil
 	}
 	return nil, status.Error(codes.Unimplemented, "google maps integration not set up")
 }
-

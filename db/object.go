@@ -17,19 +17,18 @@ import (
 	"time"
 )
 
-func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api.Object) (map[string]*api.ObjectDetail, error) {
+func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs []*api.Object) (map[string]*api.ObjectDetail, error) {
 	var objects = map[string]*api.ObjectDetail{}
-	for key, val := range objs {
+	for _, val := range objs {
 		if err := val.Validate(); err != nil {
 			return nil, status.Error(codes.InvalidArgument, err.Error())
 		}
 		txn := db.NewTransaction(true)
 		defer txn.Discard()
-		val.Key = key
 		if val.UpdatedUnix == 0 {
 			val.UpdatedUnix = time.Now().Unix()
 		}
-		metrics.GaugeObjectLocation(key, val.Point)
+		metrics.GaugeObjectLocation(val.Key, val.Point)
 		point1 := geo.NewPointFromLatLng(val.Point.Lat, val.Point.Lon)
 		var events = map[string]*api.TrackerEvent{}
 		if val.GetTracking() != nil && len(val.GetTracking().GetTrackers()) > 0 {
@@ -106,7 +105,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 			return nil, err
 		}
 		if err := txn.SetEntry(&badger.Entry{
-			Key:       []byte(key),
+			Key:       []byte(val.Key),
 			Value:     bits,
 			UserMeta:  1,
 			ExpiresAt: uint64(val.ExpiresUnix),
@@ -226,13 +225,13 @@ func Delete(db *badger.DB, keys []string) error {
 	defer txn.Discard()
 	if len(keys) > 0 && keys[0] == "*" {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
-		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
 			if err := txn.Delete(item.Key()); err != nil {
 				return status.Errorf(codes.Internal, "failed to delete key: %s %s", string(item.Key()), err.Error())
 			}
 		}
+		iter.Close()
 	} else {
 		for _, key := range keys {
 			if err := txn.Delete([]byte(key)); err != nil {

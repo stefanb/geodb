@@ -182,7 +182,7 @@ message TrackerEvent {
     Object object =1; //targe object
     double distance =2; //distance to object
     bool inside =3; //whether objects are overlapping
-    Directions direction =4; //directions from one object to annother
+    Directions direction =4; //directions from one object to another (base64 encoded)
     int64 timestamp_unix =5;
 }
 
@@ -230,7 +230,7 @@ message StreamPrefixResponse {
 }
 
 message SetRequest {
-    map<string, Object> objects =1;
+    repeated Object objects =1;
 }
 
 message SetResponse {

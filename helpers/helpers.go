@@ -1,11 +1,13 @@
 package helpers
 
 import (
+	"fmt"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
 	"googlemaps.github.io/maps"
 )
+
 var jpb = jsonpb.Marshaler{}
 
 func ToTravelMode(mode api.TravelMode) maps.Mode {
@@ -23,5 +25,5 @@ func ToTravelMode(mode api.TravelMode) maps.Mode {
 
 func PrettyJson(msg proto.Message) string {
 	str, _ := jpb.MarshalToString(msg)
-	return str
+	return fmt.Sprintln(str)
 }

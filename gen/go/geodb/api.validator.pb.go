@@ -48,6 +48,9 @@ func (this *Object) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Point", err)
 		}
 	}
+	if !(this.Radius > 0) {
+		return github_com_mwitkow_go_proto_validators.FieldError("Radius", fmt.Errorf(`value '%v' must be greater than '0'`, this.Radius))
+	}
 	if this.Tracking != nil {
 		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Tracking); err != nil {
 			return github_com_mwitkow_go_proto_validators.FieldError("Tracking", err)
@@ -160,7 +163,13 @@ func (this *StreamPrefixResponse) Validate() error {
 	return nil
 }
 func (this *SetRequest) Validate() error {
-	// Validation of proto3 map<> fields is unsupported.
+	for _, item := range this.Objects {
+		if item != nil {
+			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
+				return github_com_mwitkow_go_proto_validators.FieldError("Objects", err)
+			}
+		}
+	}
 	return nil
 }
 func (this *SetResponse) Validate() error {
