@@ -17,7 +17,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 		return nil, err
 	}
 	return &api.SetResponse{
-		Objects: objects,
+		Object: objects,
 	}, nil
 }
 

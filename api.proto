@@ -155,11 +155,11 @@ message StreamPrefixResponse {
 }
 
 message SetRequest {
-    repeated Object objects =1;
+    Object objects =1;
 }
 
 message SetResponse {
-    map<string, ObjectDetail> objects= 1;
+    ObjectDetail object= 1;
 }
 
 message GetKeysRequest {}

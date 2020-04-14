@@ -52,86 +52,87 @@ func TestPing(t *testing.T) {
 }
 
 func TestSet(t *testing.T) {
-	resp, err := geoDB.Set(context.Background(), &api.SetRequest{
-		Objects: []*api.Object{
-			{
-				Key:    "testing_coors",
-				Point:  coorsField,
-				Radius: 100,
-				Tracking: &api.ObjectTracking{
-					TravelMode: api.TravelMode_Driving,
-				},
-				Metadata:    nil,
-				GetAddress:  true,
-				GetTimezone: true,
-				ExpiresUnix: 0,
+	objects := []*api.Object{
+		{
+			Key:    "testing_coors",
+			Point:  coorsField,
+			Radius: 100,
+			Tracking: &api.ObjectTracking{
+				TravelMode: api.TravelMode_Driving,
 			},
-			{
-
-				Key:    "testing_pepsi_center",
-				Point:  pepsiCenter,
-				Radius: 100,
-				Tracking: &api.ObjectTracking{
-					TravelMode: api.TravelMode_Driving,
-					Trackers: []*api.ObjectTracker{
-						{
-							TargetObjectKey: "testing_coors",
-							TrackDirections: true,
-							TrackDistance:   true,
-							TrackEta:        true,
-						},
-					},
-				},
-				GetAddress:  true,
-				GetTimezone: true,
-				ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
-			},
-			{
-
-				Key:    "testing_pepsi_center",
-				Point:  pepsiCenter,
-				Radius: 100,
-				Tracking: &api.ObjectTracking{
-					TravelMode: api.TravelMode_Driving,
-					Trackers: []*api.ObjectTracker{
-						{
-							TargetObjectKey: "testing_coors",
-							TrackDirections: true,
-							TrackDistance:   true,
-							TrackEta:        true,
-						},
-					},
-				},
-				GetAddress:  true,
-				GetTimezone: true,
-				ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
-			},
-			{
-				Key:    "malls_cherry_creek_mall",
-				Point:  cherryCreekMall,
-				Radius: 100,
-				Tracking: &api.ObjectTracking{
-					TravelMode: api.TravelMode_Driving,
-					Trackers: []*api.ObjectTracker{
-						{
-							TargetObjectKey: "testing_pepsi_center",
-							TrackDirections: true,
-							TrackDistance:   true,
-							TrackEta:        true,
-						},
-					},
-				},
-				GetAddress:  true,
-				GetTimezone: true,
-				ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
-			},
+			Metadata:    nil,
+			GetAddress:  true,
+			GetTimezone: true,
+			ExpiresUnix: 0,
 		},
-	})
-	if err != nil {
-		t.Fatal(err.Error())
+		{
+
+			Key:    "testing_pepsi_center",
+			Point:  pepsiCenter,
+			Radius: 100,
+			Tracking: &api.ObjectTracking{
+				TravelMode: api.TravelMode_Driving,
+				Trackers: []*api.ObjectTracker{
+					{
+						TargetObjectKey: "testing_coors",
+						TrackDirections: true,
+						TrackDistance:   true,
+						TrackEta:        true,
+					},
+				},
+			},
+			GetAddress:  true,
+			GetTimezone: true,
+			ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
+		},
+		{
+
+			Key:    "testing_pepsi_center",
+			Point:  pepsiCenter,
+			Radius: 100,
+			Tracking: &api.ObjectTracking{
+				TravelMode: api.TravelMode_Driving,
+				Trackers: []*api.ObjectTracker{
+					{
+						TargetObjectKey: "testing_coors",
+						TrackDirections: true,
+						TrackDistance:   true,
+						TrackEta:        true,
+					},
+				},
+			},
+			GetAddress:  true,
+			GetTimezone: true,
+			ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
+		},
+		{
+			Key:    "malls_cherry_creek_mall",
+			Point:  cherryCreekMall,
+			Radius: 100,
+			Tracking: &api.ObjectTracking{
+				TravelMode: api.TravelMode_Driving,
+				Trackers: []*api.ObjectTracker{
+					{
+						TargetObjectKey: "testing_pepsi_center",
+						TrackDirections: true,
+						TrackDistance:   true,
+						TrackEta:        true,
+					},
+				},
+			},
+			GetAddress:  true,
+			GetTimezone: true,
+			ExpiresUnix: time.Now().Add(5 * time.Minute).Unix(),
+		},
 	}
-	for _, obj := range resp.Objects {
-		t.Log(helpers.PrettyJson(obj))
+	for _, obj := range objects {
+		resp, err := geoDB.Set(context.Background(), &api.SetRequest{
+			Objects: obj,
+		})
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+		t.Log(helpers.PrettyJson(resp))
 	}
 }
 

@@ -163,17 +163,19 @@ func (this *StreamPrefixResponse) Validate() error {
 	return nil
 }
 func (this *SetRequest) Validate() error {
-	for _, item := range this.Objects {
-		if item != nil {
-			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Objects", err)
-			}
+	if this.Objects != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Objects); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Objects", err)
 		}
 	}
 	return nil
 }
 func (this *SetResponse) Validate() error {
-	// Validation of proto3 map<> fields is unsupported.
+	if this.Object != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Object); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Object", err)
+		}
+	}
 	return nil
 }
 func (this *GetKeysRequest) Validate() error {
