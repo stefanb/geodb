@@ -102,15 +102,15 @@ func (c *Client) TravelDetail(ctx context.Context, here, there *api.Point, mode 
 	if err != nil {
 		return "", 0, 0, err
 	}
-	htmlDirections := ""
+	htmlDirections := fmt.Sprintf("\n<h5>Destination: %s</h5>", directions[0].Legs[len(directions[0].Legs)-1].EndAddress)
 	eta := 0
 	dist := 0
 	for _, leg := range directions[0].Legs {
 		eta += int(leg.DurationInTraffic.Minutes())
 		dist += leg.Meters
 		for _, step := range leg.Steps {
-			htmlDirections += "<br>"
 			htmlDirections += fmt.Sprintf("%s - %s", step.HTMLInstructions, step.HumanReadable)
+			htmlDirections += "<br>"
 		}
 	}
 	return base64.StdEncoding.EncodeToString([]byte(htmlDirections)), eta, dist, nil
