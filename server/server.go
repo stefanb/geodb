@@ -65,8 +65,24 @@ func (s *Server) GetGmaps() *maps.Client {
 	return s.gmaps
 }
 
-func NewServer() (*Server, error) {
+func GetDeps() (*badger.DB, *stream.Hub, *maps.Client, error){
 	db, err := badger.Open(badger.DefaultOptions(config.Config.GetString("GEODB_PATH")))
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	hub := stream.NewHub()
+	if config.Config.IsSet("GEODB_GMAPS_KEY") {
+		client, err := maps.NewClient(config.Config.GetString("GEODB_GMAPS_KEY"))
+		if err != nil {
+			return db, hub, nil, err
+		}
+		return db, hub, client, err
+	}
+	return db, stream.NewHub(), nil, nil
+}
+
+func NewServer() (*Server, error) {
+	db, hub, gmaps, err := GetDeps()
 	if err != nil {
 		return nil, err
 	}
@@ -97,22 +113,14 @@ func NewServer() (*Server, error) {
 		db:         db,
 		hTTPClient: http.DefaultClient,
 		logger:     log.New(),
-		streamHub:  stream.NewHub(),
+		streamHub:  hub,
+		gmaps: gmaps,
 	}
 	s.router.Use(
 		middleware.Recover(),
 	)
-
 	s.router.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 	s.hTTPClient.Timeout = 5 * time.Second
-
-	if config.Config.IsSet("GEODB_GMAPS_KEY") {
-		client, err := maps.NewClient(config.Config.GetString("GEODB_GMAPS_KEY"))
-		if err != nil {
-			return nil, err
-		}
-		s.gmaps = client
-	}
 	return s, nil
 }
 

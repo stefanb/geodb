@@ -7,7 +7,7 @@ import (
 	"sync"
 )
 
-var objectChan = make(chan *api.ObjectDetail)
+var objectChan = make(chan *api.ObjectDetail, 5000)
 
 type Hub struct {
 	objectClients map[string]chan *api.ObjectDetail

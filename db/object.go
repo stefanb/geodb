@@ -36,32 +36,29 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 			for _, tracker := range val.GetTracking().GetTrackers() {
 				item, err := txn.Get([]byte(tracker.GetTargetObjectKey()))
 				if err != nil {
-					log.Error(err.Error())
-					continue
+					return nil, err
 				}
 				res, err := item.ValueCopy(nil)
 				if err != nil {
-					log.Error(err.Error())
-					continue
+					return nil, err
 				}
-				var obj = &api.Object{}
+				var obj = &api.ObjectDetail{}
 				if err := proto.Unmarshal(res, obj); err != nil {
-					log.Error(err.Error())
+					return nil, status.Error(codes.Internal, err.Error())
+				}
+				if obj.Object.Point == nil {
 					continue
 				}
-				if obj.Point == nil {
-					continue
-				}
-				point2 := geo.NewPointFromLatLng(obj.Point.Lat, obj.Point.Lon)
+				point2 := geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)
 				dist := point1.GeoDistanceFrom(point2, true)
 				trackerEvent := &api.TrackerEvent{
-					Object:        obj,
+					Object:        obj.Object,
 					Distance:      dist,
-					Inside:        dist <= float64(val.Radius+obj.Radius),
+					Inside:        dist <= float64(val.Radius+obj.Object.Radius),
 					TimestampUnix: val.UpdatedUnix,
 				}
 				if maps != nil && val.Tracking != nil {
-					directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, obj.Point, helpers.ToTravelMode(val.GetTracking().GetTravelMode()))
+					directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, obj.Object.Point, helpers.ToTravelMode(val.GetTracking().GetTravelMode()))
 					if err != nil {
 						log.Error(err.Error())
 					} else {
@@ -77,9 +74,10 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 						}
 					}
 				}
-				events[obj.Key] = trackerEvent
+				events[obj.Object.Key] = trackerEvent
 			}
 		}
+
 		detail := &api.ObjectDetail{
 			Object: val,
 		}
@@ -103,18 +101,20 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, objs map[string]*api
 			}
 		}
 
-		bits, _ := proto.Marshal(detail)
+		bits, err := proto.Marshal(detail)
+		if err != nil {
+			return nil, err
+		}
 		if err := txn.SetEntry(&badger.Entry{
 			Key:       []byte(key),
 			Value:     bits,
 			UserMeta:  1,
 			ExpiresAt: uint64(val.ExpiresUnix),
 		}); err != nil {
-			log.Error(err.Error())
+			return nil, err
 		}
 		if err := txn.Commit(); err != nil {
-			log.Error(err.Error())
-			continue
+			return nil, err
 		}
 		hub.PublishObject(detail)
 		objects[detail.Object.Key] = detail

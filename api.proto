@@ -61,7 +61,7 @@ message Bound {
 message Object {
     string key = 1 [(validator.field) = {regex: "^.{1,225}$"}]; //a unique identifier
     Point point =2 [(validator.field) = {msg_exists : true}]; //geolocation lat/lon
-    int64 radius =3; //defaults to 100(meters)
+    int64 radius =3 [(validator.field) = {int_gt: 0}]; //radius of object in meters
     ObjectTracking tracking =4; //ObjectTracking configures object-object geofencing, directions, eta, etc
     map<string, string> metadata =5; //optional metadata associated with the object
     bool get_address =6;

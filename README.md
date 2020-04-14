@@ -116,6 +116,8 @@ service GeoDB {
     rpc ScanRegexBound(ScanRegexBoundRequest) returns(ScanRegexBoundResponse){};
     //ScanPrefexBound -  input: a geolocation boundary, output: returns an array of current object details that have keys that match the prefix and are within the boundary and
     rpc ScanPrefixBound(ScanPrefixBoundRequest) returns(ScanPrefixBoundResponse){};
+    //GetPoint can be used to get an addresses latitude/longitude - google maps integration is required.
+    rpc GetPoint(GetPointRequest) returns(GetPointResponse){};
 }
 
 //A Point is a simple X/Y or Lng/Lat 2d point. [X, Y] or [Lng, Lat]
@@ -132,13 +134,15 @@ message Bound {
 
 //An Object represents anything that has a unique identifier, and a geolocation.
 message Object {
-    string key =1; //a unique identifier
-    Point point =2; //geolocation lat/lon
-    int64 radius =3; //defaults to 100(meters)
+    string key = 1 [(validator.field) = {regex: "^.{1,225}$"}]; //a unique identifier
+    Point point =2 [(validator.field) = {msg_exists : true}]; //geolocation lat/lon
+    int64 radius =3 [(validator.field) = {int_gt: 0}]; //radius of object in meters
     ObjectTracking tracking =4; //ObjectTracking configures object-object geofencing, directions, eta, etc
     map<string, string> metadata =5; //optional metadata associated with the object
-    int64 expires_unix =6; //a unix timestamp in the future when the database should clean up the object. empty if no expiration.
-    int64 updated_unix =8; //unix timestamp representing last update (optional)
+    bool get_address =6;
+    bool get_timezone =7;
+    int64 expires_unix =8; //a unix timestamp in the future when the database should clean up the object. empty if no expiration.
+    int64 updated_unix =9; //unix timestamp representing last update (optional)
 }
 
 //ObjectTracking configures object-object geofencing, directions, eta, etc
@@ -149,9 +153,9 @@ message ObjectTracking {
 
 //a foreign object to track against another object
 message ObjectTracker {
-    string target_object_key =1;
+    string target_object_key =1 [(validator.field) = {regex: "^.{1,225}$"}];
     bool track_directions =2;
-    bool track_address =3;
+    bool track_distance =3;
     bool track_eta =4;
 }
 
@@ -174,7 +178,7 @@ message Address {
 
 //Tracker is data associated with the object tracking mechanism- it tracks one obects relation to another.
 //An object can have many trackers representing a one-many relationship
-message TrackerEvents {
+message TrackerEvent {
     Object object =1; //targe object
     double distance =2; //distance to object
     bool inside =3; //whether objects are overlapping
@@ -186,7 +190,8 @@ message TrackerEvents {
 message ObjectDetail {
     Object object =1;
     Address address = 2;
-    repeated TrackerEvents events =3;
+    string timezone =3;
+    repeated TrackerEvent events =4;
 }
 
 //TravelMode is used to generate directions based on the type of travel the object is utilizing. only necessary if using google maps
@@ -309,6 +314,14 @@ message ScanRegexBoundRequest {
 
 message ScanRegexBoundResponse {
     map<string, ObjectDetail> objects= 1;
+}
+
+message GetPointRequest {
+    string address =1;
+}
+
+message GetPointResponse {
+    Point point =1;
 }
 
 message PingRequest {}

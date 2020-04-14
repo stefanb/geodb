@@ -2,10 +2,10 @@ package maps
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	api "github.com/autom8ter/geodb/gen/go/geodb"
 	"googlemaps.github.io/maps"
-	"strings"
 	"time"
 )
 
@@ -102,17 +102,18 @@ func (c *Client) TravelDetail(ctx context.Context, here, there *api.Point, mode 
 	if err != nil {
 		return "", 0, 0, err
 	}
-	directionBuilder := &strings.Builder{}
+	htmlDirections := ""
 	eta := 0
 	dist := 0
 	for _, leg := range directions[0].Legs {
 		eta += int(leg.DurationInTraffic.Minutes())
 		dist += leg.Meters
 		for _, step := range leg.Steps {
-			directionBuilder.WriteString(fmt.Sprintln(step.HTMLInstructions))
+			htmlDirections += "<br>"
+			htmlDirections += fmt.Sprintf("%s - %s", step.HTMLInstructions, step.HumanReadable)
 		}
 	}
-	return directionBuilder.String(), eta, dist, nil
+	return base64.StdEncoding.EncodeToString([]byte(htmlDirections)), eta, dist, nil
 }
 
 func (c *Client) GetCoordinates(address string) (*api.Point, error) {
