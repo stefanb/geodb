@@ -3,10 +3,11 @@
     go get github.com/autom8ter/geodb
     docker pull colemanword/geodb:latest
     
-GeoDB is a persistant geospatial database built using [Badger](https://github.com/dgraph-io/badger) and gRPC
+GeoDB is a persistant geospatial database built using [Badger](https://github.com/dgraph-io/badger) gRPC, and the Google Maps API
 
 ## Features
 
+- [x] Concurrent ACID transactions
 - [x] Real-Time Server-Client Object Geolocation Streaming
 - [x] Persistent Object Geolocation
 - [x] Geolocation Expiration
@@ -19,9 +20,10 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - [x] Configurable(12-factor)
 - [x] Basic Authentication
 - [x] Docker Image
-- [ ] REST Translation Layer
-- [x] Docker Compose File
+- [x] Sample Docker Compose File
 - [ ] Kubernetes Manifests
+- [ ] REST Translation Layer
+- [ ] Horizontal Scaleability(Raft Protocol)
 
 ## Methodology
 
@@ -35,6 +37,11 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - Ride Sharing
 - Food Delivery
 - Asset Tracking
+
+## Clint SDKs
+
+Please refer to a client SDK to get started connecting to GeoDB
+- [Golang](https://github.com/autom8ter/geodb-go)
 
 ## Environmental Variables
 
@@ -66,6 +73,16 @@ networks:
 
 volumes:
   default:
+
+```
+geodb.env:
+
+```.env
+GEODB_PORT (optional) default: :8080
+GEODB_PATH (optional) default: /tmp/geodb
+GEODB_GC_INTERVAL (optional) default: 5m
+GEODB_PASSWORD (optional) 
+GEODB_GMAPS_KEY (optional)
 
 ```
 
@@ -124,10 +141,9 @@ message Point {
     double lon =2; //longitude
 }
 
-//A Bound represents an enclosed "box" in the 2D Euclidean or Cartesian plane.
 message Bound {
-    Point corner =1;
-    Point opposite_corner =2;
+    Point center =1;
+    double radius =2;
 }
 
 //An Object represents anything that has a unique identifier, and a geolocation.
