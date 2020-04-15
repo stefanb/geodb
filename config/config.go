@@ -9,6 +9,7 @@ func init() {
 	Config.SetDefault("GEODB_PORT", ":8080")
 	Config.SetDefault("GEODB_PATH", "/tmp/geodb")
 	Config.SetDefault("GEODB_GC_INTERVAL", "5m")
+	Config.SetDefault("GEODB_GMAPS_CACHE_DURATION", "1h")
 	Config.AutomaticEnv()
 }
 

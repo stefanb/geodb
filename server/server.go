@@ -72,7 +72,7 @@ func GetDeps() (*badger.DB, *stream.Hub, *maps.Client, error) {
 	}
 	hub := stream.NewHub()
 	if config.Config.IsSet("GEODB_GMAPS_KEY") {
-		client, err := maps.NewClient(config.Config.GetString("GEODB_GMAPS_KEY"))
+		client, err := maps.NewClient(db, config.Config.GetString("GEODB_GMAPS_KEY"), config.Config.GetDuration("GEODB_GMAPS_CACHE_DURATION"))
 		if err != nil {
 			return db, hub, nil, err
 		}

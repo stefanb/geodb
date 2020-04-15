@@ -14,6 +14,7 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - [x] Geolocation Boundary Scanning
 - [x] Targetted Geofencing- Track objects in relation to others using object "trackers"
 - [x] Google Maps Integration(see environmental variables) - Enhance Object Tracking Features 
+- [x] Google Maps Response Caching (configurable)
 - [x] gRPC Protocol
 - [x] Prometheus Metrics (/metrics endpoint)
 - [x] Object Geolocation timeseries exposed with Prometheus metrics
@@ -50,6 +51,7 @@ Please refer to a client SDK to get started connecting to GeoDB
 - GEODB_GC_INTERVAL (optional) default: 5m
 - GEODB_PASSWORD (optional) 
 - GEODB_GMAPS_KEY (optional)
+- GEODB_GMAPS_CACHE_DURATION (optional) 1h
 
 ## Sample Docker Compose
 

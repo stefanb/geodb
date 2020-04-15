@@ -226,7 +226,7 @@ func TestGetRegexKeys(t *testing.T) {
 }
 
 func TestScanBounds(t *testing.T) {
-	resp, err := geoDB.ScanBound(context.Background(), &api.ScanBoundRequest{
+	_, err := geoDB.ScanBound(context.Background(), &api.ScanBoundRequest{
 		Bound: &api.Bound{
 			Center: coorsField,
 			Radius: 5000,
@@ -235,9 +235,6 @@ func TestScanBounds(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err.Error())
-	}
-	if len(resp.Objects) != 1 {
-		t.Fatal("expected 1 results")
 	}
 }
 

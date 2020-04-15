@@ -159,6 +159,9 @@ func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {
 		defer iter.Close()
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
+			if item.UserMeta() != 1 {
+				continue
+			}
 			res, err := item.ValueCopy(nil)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
@@ -166,7 +169,7 @@ func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {
 			if len(res) > 0 {
 				var obj = &api.ObjectDetail{}
 				if err := proto.Unmarshal(res, obj); err != nil {
-					return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
+					return nil, status.Errorf(codes.Internal, "(keys) %s failed to unmarshal protobuf: %s", string(item.Key()), err.Error())
 				}
 				objects[string(item.Key())] = obj
 			}
@@ -186,7 +189,7 @@ func Get(db *badger.DB, keys []string) (map[string]*api.ObjectDetail, error) {
 			}
 			var obj = &api.ObjectDetail{}
 			if err := proto.Unmarshal(res, obj); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
+				return nil, status.Errorf(codes.Internal, "(all) failed to unmarshal protobuf: %s", err.Error())
 			}
 			objects[key] = obj
 		}
@@ -256,6 +259,9 @@ func Delete(db *badger.DB, keys []string) error {
 		iter := txn.NewIterator(badger.DefaultIteratorOptions)
 		for iter.Rewind(); iter.Valid(); iter.Next() {
 			item := iter.Item()
+			if item.UserMeta() != 1 {
+				continue
+			}
 			if err := txn.Delete(item.Key()); err != nil {
 				return status.Errorf(codes.Internal, "failed to delete key: %s %s", string(item.Key()), err.Error())
 			}
