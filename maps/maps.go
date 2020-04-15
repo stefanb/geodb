@@ -10,6 +10,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	geo "github.com/paulmach/go.geo"
 	"googlemaps.github.io/maps"
+	"strings"
 	"time"
 )
 
@@ -24,6 +25,7 @@ const (
 	directionsMeta = 2
 	timezoneMeta   = 3
 	addressMeta    = 4
+	coordinatesMeta    = 5
 )
 
 func NewClient(db *badger.DB, apiKey string, directionsExpiration time.Duration) (*Client, error) {
@@ -39,7 +41,10 @@ func NewClient(db *badger.DB, apiKey string, directionsExpiration time.Duration)
 }
 
 func (c *Client) Directions(ctx context.Context, origin *api.Point, dest *api.Point, mode maps.Mode) ([]maps.Route, error) {
-	res, _ := c.getCachedDirections(origin, dest, mode)
+	res, err := c.getCachedDirections(origin, dest, mode)
+	if err != nil {
+		return nil, err
+	}
 	if res != nil && len(res.Routes) > 0 {
 		return res.Routes, nil
 	}
@@ -62,7 +67,10 @@ func (c *Client) Directions(ctx context.Context, origin *api.Point, dest *api.Po
 }
 
 func (c *Client) GetAddress(point *api.Point) (*api.Address, error) {
-	addr, _ := c.getCachedAddress(point)
+	addr, err := c.getCachedAddress(point)
+	if err != nil {
+		return nil, err
+	}
 	if addr != nil && addr.Address != "" {
 		return addr, nil
 	}
@@ -112,7 +120,10 @@ func (c *Client) GetAddress(point *api.Point) (*api.Address, error) {
 
 func (c *Client) GetTimezone(point *api.Point) (string, error) {
 	zone, err := c.getCachedTimezone(point)
-	if zone != "" && err == nil {
+	if err != nil {
+		return "", err
+	}
+	if zone != "" {
 		return zone, nil
 	}
 	location := &maps.LatLng{
@@ -157,6 +168,13 @@ func (c *Client) TravelDetail(ctx context.Context, here, there *api.Point, mode 
 }
 
 func (c *Client) GetCoordinates(address string) (*api.Point, error) {
+	point, err := c.getCachedCoordinates(address)
+	if err != nil {
+		return nil, err
+	}
+	if point != nil {
+		return point, nil
+	}
 	req := &maps.GeocodingRequest{
 		Address: address,
 	}
@@ -164,9 +182,12 @@ func (c *Client) GetCoordinates(address string) (*api.Point, error) {
 	if err != nil {
 		return &api.Point{}, err
 	}
-	point := &api.Point{
+	point = &api.Point{
 		Lon: resp[0].Geometry.Location.Lng,
 		Lat: resp[0].Geometry.Location.Lat,
+	}
+	if err := c.cacheCoordinates(address, point); err != nil {
+		return nil, err
 	}
 	return point, nil
 }
@@ -300,6 +321,51 @@ func (c *Client) getCachedTimezone(point *api.Point) (string, error) {
 	return string(res), nil
 }
 
+
+func (c *Client) cacheCoordinates(address string, point *api.Point) error {
+	tx := c.db.NewTransaction(true)
+	defer tx.Discard()
+	bits, err := proto.Marshal(point)
+	if err != nil {
+		return err
+	}
+	e := &badger.Entry{
+		Key:       []byte(c.coordinatesCacheKey(address)),
+		Value:     []byte(bits),
+		UserMeta:  coordinatesMeta,
+		ExpiresAt: 0,
+	}
+
+	if err := tx.SetEntry(e); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) getCachedCoordinates(address string) (*api.Point, error) {
+	tx := c.db.NewTransaction(false)
+	defer tx.Discard()
+	item, err := tx.Get([]byte(c.coordinatesCacheKey(address)))
+	if err != nil {
+		return nil, err
+	}
+	res, err := item.ValueCopy(nil)
+	if err != nil {
+		return nil, err
+	}
+	if len(res) > 0 {
+		var point = &api.Point{}
+		if err := proto.Unmarshal(res, point); err != nil {
+			return nil, err
+		}
+		return point, nil
+	}
+	return nil, nil
+}
+
 func (c *Client) directionsCacheKey(origin, destination *geo.Point, mode maps.Mode) string {
 	originHash := origin.GeoHash(9)
 	destHash := destination.GeoHash(c.precision)
@@ -314,4 +380,8 @@ func (c *Client) addressCacheKey(point *geo.Point) string {
 func (c *Client) timezoneCacheKey(point *geo.Point) string {
 	hash := point.GeoHash(4)
 	return fmt.Sprintf("gmaps_timezone_%s", hash)
+}
+
+func (c *Client) coordinatesCacheKey(address string) string {
+	return fmt.Sprintf("gmaps_coordinates_%s", base64.StdEncoding.EncodeToString([]byte(strings.ToLower(strings.TrimSpace(address)))))
 }
