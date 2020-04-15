@@ -22,10 +22,10 @@ type Client struct {
 }
 
 const (
-	directionsMeta = 2
-	timezoneMeta   = 3
-	addressMeta    = 4
-	coordinatesMeta    = 5
+	directionsMeta  = 2
+	timezoneMeta    = 3
+	addressMeta     = 4
+	coordinatesMeta = 5
 )
 
 func NewClient(db *badger.DB, apiKey string, directionsExpiration time.Duration) (*Client, error) {
@@ -320,7 +320,6 @@ func (c *Client) getCachedTimezone(point *api.Point) (string, error) {
 	}
 	return string(res), nil
 }
-
 
 func (c *Client) cacheCoordinates(address string, point *api.Point) error {
 	tx := c.db.NewTransaction(true)

@@ -11,7 +11,9 @@ func GetKeys(db *badger.DB) []string {
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	keys := []string{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	iter := txn.NewIterator(opts)
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -27,7 +29,9 @@ func GetPrefixKeys(db *badger.DB, prefix string) []string {
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	keys := []string{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	iter := txn.NewIterator(opts)
 	for iter.Seek([]byte(prefix)); iter.ValidForPrefix([]byte(prefix)); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {
@@ -43,7 +47,9 @@ func GetRegexKeys(db *badger.DB, regex string) ([]string, error) {
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	keys := []string{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	iter := txn.NewIterator(opts)
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
 		if item.UserMeta() != 1 {

@@ -201,7 +201,9 @@ func GetRegex(db *badger.DB, regex string) (map[string]*api.ObjectDetail, error)
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	iter := txn.NewIterator(opts)
 	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
@@ -256,17 +258,9 @@ func Delete(db *badger.DB, keys []string) error {
 	txn := db.NewTransaction(true)
 	defer txn.Discard()
 	if len(keys) > 0 && keys[0] == "*" {
-		iter := txn.NewIterator(badger.DefaultIteratorOptions)
-		for iter.Rewind(); iter.Valid(); iter.Next() {
-			item := iter.Item()
-			if item.UserMeta() != 1 {
-				continue
-			}
-			if err := txn.Delete(item.Key()); err != nil {
-				return status.Errorf(codes.Internal, "failed to delete key: %s %s", string(item.Key()), err.Error())
-			}
+		if err := db.DropAll(); err != nil {
+			return status.Errorf(codes.Internal, "failed to delete key: %s", err.Error())
 		}
-		iter.Close()
 	} else {
 		for _, key := range keys {
 			if err := txn.Delete([]byte(key)); err != nil {
