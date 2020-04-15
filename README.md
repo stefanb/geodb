@@ -205,7 +205,7 @@ message ObjectDetail {
     Object object =1;
     Address address = 2;
     string timezone =3;
-    repeated TrackerEvent events =4;
+    repeated TrackerEvent tracker_events =4;
 }
 
 //TravelMode is used to generate directions based on the type of travel the object is utilizing. only necessary if using google maps

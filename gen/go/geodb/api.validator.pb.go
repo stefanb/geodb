@@ -103,10 +103,10 @@ func (this *ObjectDetail) Validate() error {
 			return github_com_mwitkow_go_proto_validators.FieldError("Address", err)
 		}
 	}
-	for _, item := range this.Events {
+	for _, item := range this.TrackerEvents {
 		if item != nil {
 			if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(item); err != nil {
-				return github_com_mwitkow_go_proto_validators.FieldError("Events", err)
+				return github_com_mwitkow_go_proto_validators.FieldError("TrackerEvents", err)
 			}
 		}
 	}

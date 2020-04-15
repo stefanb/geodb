@@ -126,7 +126,7 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, obj *api.Object) (*a
 	}
 	if len(events) > 0 {
 		for _, event := range events {
-			detail.Events = append(detail.Events, event)
+			detail.TrackerEvents = append(detail.TrackerEvents, event)
 		}
 	}
 
