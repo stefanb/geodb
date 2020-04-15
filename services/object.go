@@ -12,7 +12,7 @@ func (p *GeoDB) Set(ctx context.Context, r *api.SetRequest) (*api.SetResponse, e
 	if err := r.Validate(); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
-	objects, err := db.Set(p.db, p.gmaps, p.hub, r.Objects)
+	objects, err := db.Set(p.db, p.gmaps, p.hub, r.Object)
 	if err != nil {
 		return nil, err
 	}

@@ -127,7 +127,7 @@ func TestSet(t *testing.T) {
 	}
 	for _, obj := range objects {
 		resp, err := geoDB.Set(context.Background(), &api.SetRequest{
-			Objects: obj,
+			Object: obj,
 		})
 		if err != nil {
 			t.Fatal(err.Error())

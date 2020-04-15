@@ -20,7 +20,6 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 - [x] Basic Authentication
 - [x] Docker Image
 - [ ] REST Translation Layer
-- [ ] 80% Test Coverage
 - [x] Docker Compose File
 - [ ] Kubernetes Manifests
 
@@ -83,8 +82,7 @@ import "github.com/mwitkow/go-proto-validators/validator.proto";
 service GeoDB {
     //Ping - input: empty, output: returns ok if server is healthy.
     rpc Ping(PingRequest) returns(PingResponse){};
-    //Set - input: a string(objectKey) Object map output: returns an array of updated object details.
-    //objects are upserted in the order they are sent
+    //Set - input: an object output: an object detail. Object details are enhanced when the google maps integration is active
     rpc Set(SetRequest) returns(SetResponse){};
     //Get - input: an array of object keys, output: returns an array of current object details
     rpc Get(GetRequest) returns(GetResponse){};
@@ -230,11 +228,11 @@ message StreamPrefixResponse {
 }
 
 message SetRequest {
-    repeated Object objects =1;
+    Object object =1 [(validator.field) = {msg_exists : true}];
 }
 
 message SetResponse {
-    map<string, ObjectDetail> objects= 1;
+    ObjectDetail object= 1;
 }
 
 message GetKeysRequest {}
