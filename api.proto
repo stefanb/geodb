@@ -50,10 +50,9 @@ message Point {
     double lon =2; //longitude
 }
 
-//A Bound represents an enclosed "box" in the 2D Euclidean or Cartesian plane.
 message Bound {
-    Point corner =1;
-    Point opposite_corner =2;
+    Point center =1;
+    double radius =2;
 }
 
 //An Object represents anything that has a unique identifier, and a geolocation.

@@ -228,8 +228,8 @@ func TestGetRegexKeys(t *testing.T) {
 func TestScanBounds(t *testing.T) {
 	resp, err := geoDB.ScanBound(context.Background(), &api.ScanBoundRequest{
 		Bound: &api.Bound{
-			Corner:         coorsField,
-			OppositeCorner: saintJosephHospital,
+			Center: coorsField,
+			Radius: 5000,
 		},
 		Keys: nil,
 	})

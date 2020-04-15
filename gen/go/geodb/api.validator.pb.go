@@ -21,14 +21,9 @@ func (this *Point) Validate() error {
 	return nil
 }
 func (this *Bound) Validate() error {
-	if this.Corner != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Corner); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("Corner", err)
-		}
-	}
-	if this.OppositeCorner != nil {
-		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.OppositeCorner); err != nil {
-			return github_com_mwitkow_go_proto_validators.FieldError("OppositeCorner", err)
+	if this.Center != nil {
+		if err := github_com_mwitkow_go_proto_validators.CallValidatorIfExists(this.Center); err != nil {
+			return github_com_mwitkow_go_proto_validators.FieldError("Center", err)
 		}
 	}
 	return nil

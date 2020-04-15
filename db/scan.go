@@ -12,6 +12,7 @@ import (
 )
 
 func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.ObjectDetail, error) {
+	geoBound := geo.NewGeoBoundAroundPoint(geo.NewPointFromLatLng(bound.Center.Lat, bound.Center.Lon), bound.Radius)
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
@@ -29,7 +30,6 @@ func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.
 				if err := proto.Unmarshal(res, obj); err != nil {
 					return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 				}
-				geoBound := geo.NewBoundFromPoints(geo.NewPointFromLatLng(bound.Corner.Lat, bound.Corner.Lon), geo.NewPointFromLatLng(bound.OppositeCorner.Lat, bound.OppositeCorner.Lon))
 				if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
 					objects[string(item.Key())] = obj
 				}
@@ -43,7 +43,6 @@ func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.
 			if err := proto.Unmarshal(res, obj); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 			}
-			geoBound := geo.NewBoundFromPoints(geo.NewPointFromLatLng(bound.Corner.Lat, bound.Corner.Lon), geo.NewPointFromLatLng(bound.OppositeCorner.Lat, bound.OppositeCorner.Lon))
 			if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
 				objects[string(item.Key())] = obj
 			}
@@ -53,6 +52,7 @@ func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.
 }
 
 func ScanRegexBound(db *badger.DB, bound *api.Bound, rgex string) (map[string]*api.ObjectDetail, error) {
+	geoBound := geo.NewGeoBoundAroundPoint(geo.NewPointFromLatLng(bound.Center.Lat, bound.Center.Lon), bound.Radius)
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
@@ -73,7 +73,6 @@ func ScanRegexBound(db *badger.DB, bound *api.Bound, rgex string) (map[string]*a
 			if err := proto.Unmarshal(res, obj); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 			}
-			geoBound := geo.NewBoundFromPoints(geo.NewPointFromLatLng(bound.Corner.Lat, bound.Corner.Lon), geo.NewPointFromLatLng(bound.OppositeCorner.Lat, bound.OppositeCorner.Lon))
 			if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
 				objects[string(item.Key())] = obj
 			}
@@ -83,6 +82,7 @@ func ScanRegexBound(db *badger.DB, bound *api.Bound, rgex string) (map[string]*a
 }
 
 func ScanPrefixBound(db *badger.DB, bound *api.Bound, prefix string) (map[string]*api.ObjectDetail, error) {
+	geoBound := geo.NewGeoBoundAroundPoint(geo.NewPointFromLatLng(bound.Center.Lat, bound.Center.Lon), bound.Radius)
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
@@ -98,7 +98,6 @@ func ScanPrefixBound(db *badger.DB, bound *api.Bound, prefix string) (map[string
 		if err := proto.Unmarshal(res, obj); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 		}
-		geoBound := geo.NewBoundFromPoints(geo.NewPointFromLatLng(bound.Corner.Lat, bound.Corner.Lon), geo.NewPointFromLatLng(bound.OppositeCorner.Lat, bound.OppositeCorner.Lon))
 		if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
 			objects[string(item.Key())] = obj
 		}
