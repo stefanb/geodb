@@ -46,43 +46,45 @@ func Set(db *badger.DB, maps *maps.Client, hub *stream.Hub, obj *api.Object) (*a
 					log.Error(err.Error())
 					return
 				}
-				var obj = &api.ObjectDetail{}
-				if err := proto.Unmarshal(res, obj); err != nil {
-					log.Error(err.Error())
-					return
-				}
-				if obj.Object.Point == nil {
-					return
-				}
-				point2 := geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)
-				dist := point1.GeoDistanceFrom(point2, true)
-				trackerEvent := &api.TrackerEvent{
-					Object:        obj.Object,
-					Distance:      dist,
-					Inside:        dist <= float64(val.Radius+obj.Object.Radius),
-					TimestampUnix: val.UpdatedUnix,
-				}
-				if maps != nil && val.Tracking != nil {
-					directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, obj.Object.Point, helpers.ToTravelMode(val.GetTracking().GetTravelMode()))
-					if err != nil {
+				if len(res) > 0 {
+					var object = &api.ObjectDetail{}
+					if err := proto.Unmarshal(res, obj); err != nil {
 						log.Error(err.Error())
-					} else {
-						trackerEvent.Direction = &api.Directions{}
-						if tracker.TrackDirections {
-							trackerEvent.Direction.HtmlDirections = directions
-						}
-						if tracker.TrackEta {
-							trackerEvent.Direction.Eta = int64(eta)
-						}
-						if tracker.TrackDistance {
-							trackerEvent.Direction.TravelDist = int64(dist)
+						return
+					}
+					if object.Object.Point == nil {
+						return
+					}
+					point2 := geo.NewPointFromLatLng(object.Object.Point.Lat, object.Object.Point.Lon)
+					dist := point1.GeoDistanceFrom(point2, true)
+					trackerEvent := &api.TrackerEvent{
+						Object:        object.Object,
+						Distance:      dist,
+						Inside:        dist <= float64(val.Radius+object.Object.Radius),
+						TimestampUnix: val.UpdatedUnix,
+					}
+					if maps != nil && val.Tracking != nil {
+						directions, eta, dist, err := maps.TravelDetail(context.Background(), val.Point, object.Object.Point, helpers.ToTravelMode(val.GetTracking().GetTravelMode()))
+						if err != nil {
+							log.Error(err.Error())
+						} else {
+							trackerEvent.Direction = &api.Directions{}
+							if tracker.TrackDirections {
+								trackerEvent.Direction.HtmlDirections = directions
+							}
+							if tracker.TrackEta {
+								trackerEvent.Direction.Eta = int64(eta)
+							}
+							if tracker.TrackDistance {
+								trackerEvent.Direction.TravelDist = int64(dist)
+							}
 						}
 					}
+					mu.Lock()
+					events[object.Object.Key] = trackerEvent
+					mu.Unlock()
+					txn.Discard()
 				}
-				mu.Lock()
-				events[obj.Object.Key] = trackerEvent
-				mu.Unlock()
-				txn.Discard()
 			}(obj, t)
 		}
 	}
