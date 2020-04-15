@@ -5,7 +5,6 @@ import (
 	"github.com/dgraph-io/badger/v2"
 	"github.com/gogo/protobuf/proto"
 	geo "github.com/paulmach/go.geo"
-	"github.com/thoas/go-funk"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"regexp"
@@ -16,30 +15,34 @@ func ScanBound(db *badger.DB, bound *api.Bound, keys []string) (map[string]*api.
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
-	defer iter.Close()
-	for iter.Rewind(); iter.Valid(); iter.Next() {
-		item := iter.Item()
-		if item.UserMeta() != 1 {
-			continue
-		}
-		if len(keys) > 0 {
-			if funk.ContainsString(keys, string(item.Key())) {
-				res, err := item.ValueCopy(nil)
-				if err != nil {
-					return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
+	if len(keys) > 0 {
+		for _, key := range keys {
+			item, err := txn.Get([]byte(key))
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get key: %s", err.Error())
+			}
+			res, err := item.ValueCopy(nil)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
+			}
+			if len(res) > 0 {
+				var obj = &api.ObjectDetail{}
+				if err := proto.Unmarshal(res, obj); err != nil {
+					return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
 				}
-				if len(res) > 0 {
-					var obj = &api.ObjectDetail{}
-					if err := proto.Unmarshal(res, obj); err != nil {
-						return nil, status.Errorf(codes.Internal, "failed to unmarshal protobuf: %s", err.Error())
-					}
-					if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
-						objects[string(item.Key())] = obj
-					}
+				if geoBound.Contains(geo.NewPointFromLatLng(obj.Object.Point.Lat, obj.Object.Point.Lon)) {
+					objects[string(item.Key())] = obj
 				}
 			}
-		} else {
+		}
+	} else {
+		iter := txn.NewIterator(badger.DefaultIteratorOptions)
+		defer iter.Close()
+		for iter.Rewind(); iter.Valid(); iter.Next() {
+			item := iter.Item()
+			if item.UserMeta() != 1 {
+				continue
+			}
 			res, err := item.ValueCopy(nil)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to copy data: %s", err.Error())
@@ -63,7 +66,9 @@ func ScanRegexBound(db *badger.DB, bound *api.Bound, rgex string) (map[string]*a
 	txn := db.NewTransaction(false)
 	defer txn.Discard()
 	objects := map[string]*api.ObjectDetail{}
-	iter := txn.NewIterator(badger.DefaultIteratorOptions)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchValues = false
+	iter := txn.NewIterator(opts)
 	defer iter.Close()
 	for iter.Rewind(); iter.Valid(); iter.Next() {
 		item := iter.Item()
