@@ -41,7 +41,7 @@ GeoDB is a persistant geospatial database built using [Badger](https://github.co
 
 ## Clint SDKs
 
-Please refer to a client SDK to get started connecting to GeoDB
+Please refer to a client SDK for **examples and codes snippets**
 - [Golang](https://github.com/autom8ter/geodb-go)
 
 ## Environmental Variables
